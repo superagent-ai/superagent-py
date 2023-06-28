@@ -1,7 +1,23 @@
-# Superagent Python Library
+<div align="center">
 
+# Superagent Python Library 🥷
+
+**Build, deploy, and manage LLM-powered agents**
+[superagent.sh](https://superagent.sh)
+
+<p>
 [![pypi](https://img.shields.io/pypi/v/fern-superagent.svg)](https://pypi.python.org/pypi/superagent-py)
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-SDK%20generated%20by%20Fern-brightgreen)](https://github.com/fern-api/fern)
+<img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/homanp/superagent-py" />
+<img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/homanp/superagent-py" />
+<img alt="" src="https://img.shields.io/github/repo-size/homanp/superagent-py" />
+<img alt="GitHub Issues" src="https://img.shields.io/github/issues/homanp/superagent-py" />
+<img alt="GitHub Pull Requests" src="https://img.shields.io/github/issues-pr/homanp/superagent-py" />
+<img alt="Github License" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+<img alt="Discord" src="https://img.shields.io/discord/1110910277110743103?label=Discord&logo=discord&logoColor=white&style=plastic&color=d7b023)](https://discord.gg/e8j7mgjDUK" />
+</p>
+
+</div>
 
 ## Installation
 
