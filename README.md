@@ -6,8 +6,8 @@
 [superagent.sh](https://superagent.sh)
 
 <p>
-[![pypi](https://img.shields.io/pypi/v/fern-superagent.svg)](https://pypi.python.org/pypi/superagent-py)
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-SDK%20generated%20by%20Fern-brightgreen)](https://github.com/fern-api/fern)
+<img alt="PyPi" src="https://img.shields.io/pypi/v/fern-superagent.svg" />
+<img alt="Fern" src="https://img.shields.io/badge/%F0%9F%8C%BF-SDK%20generated%20by%20Fern-brightgreen" />
 <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/homanp/superagent-py" />
 <img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/homanp/superagent-py" />
 <img alt="" src="https://img.shields.io/github/repo-size/homanp/superagent-py" />
@@ -75,6 +75,10 @@ Error codes are as followed:
 | Status Code | Error Type                 |
 | ----------- | -------------------------- |
 | 422         | `UnprocessableEntityError` |
+
+## Acknowledgements
+
+A special thanks to the [Fern](https://buildwithfern.com/) for all support with the Superagent libraries and SDKS.
 
 ## Beta status
 
