@@ -15,18 +15,16 @@ from ...types.http_validation_error import HttpValidationError
 
 
 class AgentToolsClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
+    def __init__(self, *, environment: str, api_key: str):
         self._environment = environment
-        self._token = token
+        self.api_key = api_key
 
     def list_agent_tools(self, *, expand: typing.Optional[bool] = None) -> typing.Any:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/agent-tools"),
             params={"expand": expand},
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -44,9 +42,7 @@ class AgentToolsClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/agent-tools"),
             json=jsonable_encoder({"agentId": agent_id, "toolId": tool_id}),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -63,9 +59,7 @@ class AgentToolsClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agent-tools/{agent_tool_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -82,9 +76,7 @@ class AgentToolsClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agent-tools/{agent_tool_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -99,9 +91,9 @@ class AgentToolsClient:
 
 
 class AsyncAgentToolsClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
+    def __init__(self, *, environment: str, api_key: str):
         self._environment = environment
-        self._token = token
+        self.api_key = api_key
 
     async def list_agent_tools(self, *, expand: typing.Optional[bool] = None) -> typing.Any:
         async with httpx.AsyncClient() as _client:
@@ -109,9 +101,7 @@ class AsyncAgentToolsClient:
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/agent-tools"),
                 params={"expand": expand},
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
+                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -130,9 +120,7 @@ class AsyncAgentToolsClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/agent-tools"),
                 json=jsonable_encoder({"agentId": agent_id, "toolId": tool_id}),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
+                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -150,9 +138,7 @@ class AsyncAgentToolsClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agent-tools/{agent_tool_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
+                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -170,9 +156,7 @@ class AsyncAgentToolsClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agent-tools/{agent_tool_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
+                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

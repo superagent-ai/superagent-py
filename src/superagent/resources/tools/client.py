@@ -18,17 +18,15 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class ToolsClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
+    def __init__(self, *, environment: str, api_key: str):
         self._environment = environment
-        self._token = token
+        self.api_key = api_key
 
     def list_tools(self) -> typing.Any:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/tools"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -56,9 +54,7 @@ class ToolsClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/tools"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -75,9 +71,7 @@ class ToolsClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -94,9 +88,7 @@ class ToolsClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -111,18 +103,16 @@ class ToolsClient:
 
 
 class AsyncToolsClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
+    def __init__(self, *, environment: str, api_key: str):
         self._environment = environment
-        self._token = token
+        self.api_key = api_key
 
     async def list_tools(self) -> typing.Any:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/tools"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
+                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -151,9 +141,7 @@ class AsyncToolsClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/tools"),
                 json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
+                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -171,9 +159,7 @@ class AsyncToolsClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
+                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -191,9 +177,7 @@ class AsyncToolsClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
+                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
