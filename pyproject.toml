@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "superagent-py"
-version = "v0.0.26"
+version = "v0.0.27"
 description = ""
 readme = "README.md"
 authors = []
@@ -10,8 +10,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-httpx = "0.23.3"
 pydantic = "^1.9.2"
+httpx = "0.23.3"
 
 [tool.poetry.dev-dependencies]
 mypy = "0.971"
