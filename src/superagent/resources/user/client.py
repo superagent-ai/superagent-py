@@ -14,15 +14,17 @@ from ...types.http_validation_error import HttpValidationError
 
 
 class UserClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     def read_user_me(self) -> typing.Any:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/users/me"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -37,7 +39,9 @@ class UserClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/users/{user_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -52,16 +56,18 @@ class UserClient:
 
 
 class AsyncUserClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     async def read_user_me(self) -> typing.Any:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/users/me"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -77,7 +83,9 @@ class AsyncUserClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/users/{user_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

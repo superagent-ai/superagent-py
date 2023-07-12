@@ -18,15 +18,17 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class AgentClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     def list_all_agents(self) -> typing.Any:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -57,7 +59,9 @@ class AgentClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -74,7 +78,9 @@ class AgentClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -92,7 +98,9 @@ class AgentClient:
             "PATCH",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -109,7 +117,9 @@ class AgentClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -132,7 +142,9 @@ class AgentClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}/predict"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -147,16 +159,18 @@ class AgentClient:
 
 
 class AsyncAgentClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     async def list_all_agents(self) -> typing.Any:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -188,7 +202,9 @@ class AsyncAgentClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents"),
                 json=jsonable_encoder(_request),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -206,7 +222,9 @@ class AsyncAgentClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -225,7 +243,9 @@ class AsyncAgentClient:
                 "PATCH",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
                 json=jsonable_encoder(request),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -243,7 +263,9 @@ class AsyncAgentClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -267,7 +289,9 @@ class AsyncAgentClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}/predict"),
                 json=jsonable_encoder(_request),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

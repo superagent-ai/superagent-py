@@ -15,15 +15,17 @@ from ...types.http_validation_error import HttpValidationError
 
 
 class PromptsClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     def list_prompts(self) -> typing.Any:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/prompts"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -39,7 +41,9 @@ class PromptsClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/prompts"),
             json=jsonable_encoder({"name": name, "input_variables": input_variables, "template": template}),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -56,7 +60,9 @@ class PromptsClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/prompts/{prompt_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -74,7 +80,9 @@ class PromptsClient:
             "PATCH",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/prompts/{prompt_id}"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -91,7 +99,9 @@ class PromptsClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/prompts/{prompt_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -106,16 +116,18 @@ class PromptsClient:
 
 
 class AsyncPromptsClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     async def list_prompts(self) -> typing.Any:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/prompts"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -134,7 +146,9 @@ class AsyncPromptsClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/prompts"),
                 json=jsonable_encoder({"name": name, "input_variables": input_variables, "template": template}),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -152,7 +166,9 @@ class AsyncPromptsClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/prompts/{prompt_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -171,7 +187,9 @@ class AsyncPromptsClient:
                 "PATCH",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/prompts/{prompt_id}"),
                 json=jsonable_encoder(request),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -189,7 +207,9 @@ class AsyncPromptsClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/prompts/{prompt_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

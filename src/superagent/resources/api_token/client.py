@@ -15,15 +15,17 @@ from ...types.http_validation_error import HttpValidationError
 
 
 class ApiTokenClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     def list_api_tokens(self) -> typing.Any:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/api-tokens"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -39,7 +41,9 @@ class ApiTokenClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/api-tokens"),
             json=jsonable_encoder({"description": description}),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -56,7 +60,9 @@ class ApiTokenClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/api-tokens/{token_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -73,7 +79,9 @@ class ApiTokenClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/api-tokens/{token_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -88,16 +96,18 @@ class ApiTokenClient:
 
 
 class AsyncApiTokenClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     async def list_api_tokens(self) -> typing.Any:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/api-tokens"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -114,7 +124,9 @@ class AsyncApiTokenClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/api-tokens"),
                 json=jsonable_encoder({"description": description}),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -132,7 +144,9 @@ class AsyncApiTokenClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/api-tokens/{token_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -150,7 +164,9 @@ class AsyncApiTokenClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/api-tokens/{token_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

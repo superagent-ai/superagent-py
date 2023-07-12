@@ -15,16 +15,18 @@ from ...types.http_validation_error import HttpValidationError
 
 
 class AgentDocumentsClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     def list_agent_documents(self, *, expand: typing.Optional[bool] = None) -> typing.Any:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/agent-documents"),
             params={"expand": expand},
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -42,7 +44,9 @@ class AgentDocumentsClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "api/v1/agent-documents"),
             json=jsonable_encoder({"agentId": agent_id, "documentId": document_id}),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -59,7 +63,9 @@ class AgentDocumentsClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agent-documents/{agent_document_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -76,7 +82,9 @@ class AgentDocumentsClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agent-documents/{agent_document_id}"),
-            headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -91,9 +99,9 @@ class AgentDocumentsClient:
 
 
 class AsyncAgentDocumentsClient:
-    def __init__(self, *, environment: str, api_key: str):
+    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
         self._environment = environment
-        self.api_key = api_key
+        self._token = token
 
     async def list_agent_documents(self, *, expand: typing.Optional[bool] = None) -> typing.Any:
         async with httpx.AsyncClient() as _client:
@@ -101,7 +109,9 @@ class AsyncAgentDocumentsClient:
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/agent-documents"),
                 params={"expand": expand},
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -120,7 +130,9 @@ class AsyncAgentDocumentsClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/agent-documents"),
                 json=jsonable_encoder({"agentId": agent_id, "documentId": document_id}),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -138,7 +150,9 @@ class AsyncAgentDocumentsClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agent-documents/{agent_document_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -156,7 +170,9 @@ class AsyncAgentDocumentsClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agent-documents/{agent_document_id}"),
-                headers=remove_none_from_headers({"X_SUPERAGENT_API_KEY": self.api_key}),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
