@@ -34,7 +34,7 @@ poetry add superagent-py
 ```python
 from superagent.client import Superagent
 
-client = Superagent(token="API_TOKEN")
+client = Superagent(token="API_TOKEN", environment="https://api.superagent.sh")
 
 agent = client.agents.get_agent("<AGENT_ID>")
 
@@ -48,7 +48,7 @@ from superagent.client import AsyncSuperagent
 
 import asyncio
 
-client = AsyncSuperagent(token="API_TOKEN")
+client = AsyncSuperagent(token="API_TOKEN", environment="https://api.superagent.sh")
 
 async def get_agent() -> None:
     agent = client.agents.get_agent("<AGENT_ID>")
