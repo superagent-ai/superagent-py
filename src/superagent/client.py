@@ -9,6 +9,7 @@ from .resources.api_token.client import ApiTokenClient, AsyncApiTokenClient
 from .resources.auth.client import AsyncAuthClient, AuthClient
 from .resources.documents.client import AsyncDocumentsClient, DocumentsClient
 from .resources.prompts.client import AsyncPromptsClient, PromptsClient
+from .resources.tags.client import AsyncTagsClient, TagsClient
 from .resources.tools.client import AsyncToolsClient, ToolsClient
 from .resources.traces.client import AsyncTracesClient, TracesClient
 from .resources.user.client import AsyncUserClient, UserClient
@@ -20,6 +21,7 @@ class Superagent:
         self._token = token
         self.agent = AgentClient(environment=self._environment, token=self._token)
         self.agent_documents = AgentDocumentsClient(environment=self._environment, token=self._token)
+        self.tags = TagsClient(environment=self._environment, token=self._token)
         self.agent_tools = AgentToolsClient(environment=self._environment, token=self._token)
         self.auth = AuthClient(environment=self._environment, token=self._token)
         self.user = UserClient(environment=self._environment, token=self._token)
@@ -36,6 +38,7 @@ class AsyncSuperagent:
         self._token = token
         self.agent = AsyncAgentClient(environment=self._environment, token=self._token)
         self.agent_documents = AsyncAgentDocumentsClient(environment=self._environment, token=self._token)
+        self.tags = AsyncTagsClient(environment=self._environment, token=self._token)
         self.agent_tools = AsyncAgentToolsClient(environment=self._environment, token=self._token)
         self.auth = AsyncAuthClient(environment=self._environment, token=self._token)
         self.user = AsyncUserClient(environment=self._environment, token=self._token)

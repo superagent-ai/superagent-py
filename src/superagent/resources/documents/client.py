@@ -43,16 +43,21 @@ class DocumentsClient:
         self,
         *,
         type: str,
-        url: str,
+        url: typing.Optional[str] = OMIT,
         name: str,
         authorization: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         from_page: typing.Optional[int] = OMIT,
         to_page: typing.Optional[int] = OMIT,
         splitter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> typing.Any:
-        _request: typing.Dict[str, typing.Any] = {"type": type, "url": url, "name": name}
+        _request: typing.Dict[str, typing.Any] = {"type": type, "name": name}
+        if url is not OMIT:
+            _request["url"] = url
         if authorization is not OMIT:
             _request["authorization"] = authorization
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
         if from_page is not OMIT:
             _request["from_page"] = from_page
         if to_page is not OMIT:
@@ -144,16 +149,21 @@ class AsyncDocumentsClient:
         self,
         *,
         type: str,
-        url: str,
+        url: typing.Optional[str] = OMIT,
         name: str,
         authorization: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         from_page: typing.Optional[int] = OMIT,
         to_page: typing.Optional[int] = OMIT,
         splitter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> typing.Any:
-        _request: typing.Dict[str, typing.Any] = {"type": type, "url": url, "name": name}
+        _request: typing.Dict[str, typing.Any] = {"type": type, "name": name}
+        if url is not OMIT:
+            _request["url"] = url
         if authorization is not OMIT:
             _request["authorization"] = authorization
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
         if from_page is not OMIT:
             _request["from_page"] = from_page
         if to_page is not OMIT:
