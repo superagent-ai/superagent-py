@@ -133,11 +133,18 @@ class AgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def prompt_agent(
-        self, agent_id: str, *, input: typing.Dict[str, typing.Any], has_streaming: typing.Optional[bool] = OMIT
+        self,
+        agent_id: str,
+        *,
+        input: typing.Dict[str, typing.Any],
+        has_streaming: typing.Optional[bool] = OMIT,
+        session: typing.Optional[str] = OMIT,
     ) -> typing.Any:
         _request: typing.Dict[str, typing.Any] = {"input": input}
         if has_streaming is not OMIT:
             _request["has_streaming"] = has_streaming
+        if session is not OMIT:
+            _request["session"] = session
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}/predict"),
@@ -279,11 +286,18 @@ class AsyncAgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def prompt_agent(
-        self, agent_id: str, *, input: typing.Dict[str, typing.Any], has_streaming: typing.Optional[bool] = OMIT
+        self,
+        agent_id: str,
+        *,
+        input: typing.Dict[str, typing.Any],
+        has_streaming: typing.Optional[bool] = OMIT,
+        session: typing.Optional[str] = OMIT,
     ) -> typing.Any:
         _request: typing.Dict[str, typing.Any] = {"input": input}
         if has_streaming is not OMIT:
             _request["has_streaming"] = has_streaming
+        if session is not OMIT:
+            _request["session"] = session
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
                 "POST",
