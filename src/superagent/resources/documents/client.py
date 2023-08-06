@@ -44,6 +44,7 @@ class DocumentsClient:
         *,
         type: str,
         url: typing.Optional[str] = OMIT,
+        content: typing.Optional[str] = OMIT,
         name: str,
         authorization: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
@@ -54,6 +55,8 @@ class DocumentsClient:
         _request: typing.Dict[str, typing.Any] = {"type": type, "name": name}
         if url is not OMIT:
             _request["url"] = url
+        if content is not OMIT:
+            _request["content"] = content
         if authorization is not OMIT:
             _request["authorization"] = authorization
         if metadata is not OMIT:
@@ -170,6 +173,7 @@ class AsyncDocumentsClient:
         *,
         type: str,
         url: typing.Optional[str] = OMIT,
+        content: typing.Optional[str] = OMIT,
         name: str,
         authorization: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
@@ -180,6 +184,8 @@ class AsyncDocumentsClient:
         _request: typing.Dict[str, typing.Any] = {"type": type, "name": name}
         if url is not OMIT:
             _request["url"] = url
+        if content is not OMIT:
+            _request["content"] = content
         if authorization is not OMIT:
             _request["authorization"] = authorization
         if metadata is not OMIT:

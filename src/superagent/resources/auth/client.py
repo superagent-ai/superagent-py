@@ -74,6 +74,33 @@ class AuthClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
+    def oauth_handler(
+        self, *, email: str, name: str, access_token: typing.Optional[str] = OMIT, provider: typing.Optional[str] = OMIT
+    ) -> typing.Any:
+        _request: typing.Dict[str, typing.Any] = {"email": email, "name": name}
+        if access_token is not OMIT:
+            _request["access_token"] = access_token
+        if provider is not OMIT:
+            _request["provider"] = provider
+        _response = httpx.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/oauth/callback"),
+            json=jsonable_encoder(_request),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
 
 class AsyncAuthClient:
     def __init__(self, *, environment: str, token: typing.Optional[str] = None):
@@ -118,6 +145,34 @@ class AsyncAuthClient:
             _response = await _client.request(
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/sign-up"),
+                json=jsonable_encoder(_request),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+                timeout=60,
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def oauth_handler(
+        self, *, email: str, name: str, access_token: typing.Optional[str] = OMIT, provider: typing.Optional[str] = OMIT
+    ) -> typing.Any:
+        _request: typing.Dict[str, typing.Any] = {"email": email, "name": name}
+        if access_token is not OMIT:
+            _request["access_token"] = access_token
+        if provider is not OMIT:
+            _request["provider"] = provider
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "POST",
+                urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/oauth/callback"),
                 json=jsonable_encoder(_request),
                 headers=remove_none_from_headers(
                     {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
