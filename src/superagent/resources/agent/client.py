@@ -44,11 +44,17 @@ class AgentClient:
         *,
         name: str,
         type: str,
+        description: typing.Optional[str] = OMIT,
+        avatar_url: typing.Optional[str] = OMIT,
         llm: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         has_memory: typing.Optional[bool] = OMIT,
         prompt_id: typing.Optional[str] = OMIT,
     ) -> typing.Any:
         _request: typing.Dict[str, typing.Any] = {"name": name, "type": type}
+        if description is not OMIT:
+            _request["description"] = description
+        if avatar_url is not OMIT:
+            _request["avatarUrl"] = avatar_url
         if llm is not OMIT:
             _request["llm"] = llm
         if has_memory is not OMIT:
@@ -68,6 +74,23 @@ class AgentClient:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def list_library_agents(self) -> typing.Any:
+        _response = httpx.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents/library"),
+            headers=remove_none_from_headers(
+                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+            ),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -193,11 +216,17 @@ class AsyncAgentClient:
         *,
         name: str,
         type: str,
+        description: typing.Optional[str] = OMIT,
+        avatar_url: typing.Optional[str] = OMIT,
         llm: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         has_memory: typing.Optional[bool] = OMIT,
         prompt_id: typing.Optional[str] = OMIT,
     ) -> typing.Any:
         _request: typing.Dict[str, typing.Any] = {"name": name, "type": type}
+        if description is not OMIT:
+            _request["description"] = description
+        if avatar_url is not OMIT:
+            _request["avatarUrl"] = avatar_url
         if llm is not OMIT:
             _request["llm"] = llm
         if has_memory is not OMIT:
@@ -218,6 +247,24 @@ class AsyncAgentClient:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def list_library_agents(self) -> typing.Any:
+        async with httpx.AsyncClient() as _client:
+            _response = await _client.request(
+                "GET",
+                urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents/library"),
+                headers=remove_none_from_headers(
+                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
+                ),
+                timeout=60,
+            )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
