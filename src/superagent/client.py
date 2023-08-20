@@ -2,6 +2,9 @@
 
 import typing
 
+import httpx
+
+from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .resources.agent.client import AgentClient, AsyncAgentClient
 from .resources.agent_documents.client import AgentDocumentsClient, AsyncAgentDocumentsClient
 from .resources.agent_tools.client import AgentToolsClient, AsyncAgentToolsClient
@@ -16,34 +19,48 @@ from .resources.user.client import AsyncUserClient, UserClient
 
 
 class Superagent:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
-        self.agent = AgentClient(environment=self._environment, token=self._token)
-        self.agent_documents = AgentDocumentsClient(environment=self._environment, token=self._token)
-        self.tags = TagsClient(environment=self._environment, token=self._token)
-        self.agent_tools = AgentToolsClient(environment=self._environment, token=self._token)
-        self.auth = AuthClient(environment=self._environment, token=self._token)
-        self.user = UserClient(environment=self._environment, token=self._token)
-        self.api_token = ApiTokenClient(environment=self._environment, token=self._token)
-        self.documents = DocumentsClient(environment=self._environment, token=self._token)
-        self.prompts = PromptsClient(environment=self._environment, token=self._token)
-        self.tools = ToolsClient(environment=self._environment, token=self._token)
-        self.traces = TracesClient(environment=self._environment, token=self._token)
+    def __init__(
+        self,
+        *,
+        base_url: str,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        timeout: typing.Optional[float] = 60
+    ):
+        self._client_wrapper = SyncClientWrapper(
+            base_url=base_url, token=token, httpx_client=httpx.Client(timeout=timeout)
+        )
+        self.agent = AgentClient(client_wrapper=self._client_wrapper)
+        self.agent_documents = AgentDocumentsClient(client_wrapper=self._client_wrapper)
+        self.tags = TagsClient(client_wrapper=self._client_wrapper)
+        self.agent_tools = AgentToolsClient(client_wrapper=self._client_wrapper)
+        self.auth = AuthClient(client_wrapper=self._client_wrapper)
+        self.user = UserClient(client_wrapper=self._client_wrapper)
+        self.api_token = ApiTokenClient(client_wrapper=self._client_wrapper)
+        self.documents = DocumentsClient(client_wrapper=self._client_wrapper)
+        self.prompts = PromptsClient(client_wrapper=self._client_wrapper)
+        self.tools = ToolsClient(client_wrapper=self._client_wrapper)
+        self.traces = TracesClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncSuperagent:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
-        self.agent = AsyncAgentClient(environment=self._environment, token=self._token)
-        self.agent_documents = AsyncAgentDocumentsClient(environment=self._environment, token=self._token)
-        self.tags = AsyncTagsClient(environment=self._environment, token=self._token)
-        self.agent_tools = AsyncAgentToolsClient(environment=self._environment, token=self._token)
-        self.auth = AsyncAuthClient(environment=self._environment, token=self._token)
-        self.user = AsyncUserClient(environment=self._environment, token=self._token)
-        self.api_token = AsyncApiTokenClient(environment=self._environment, token=self._token)
-        self.documents = AsyncDocumentsClient(environment=self._environment, token=self._token)
-        self.prompts = AsyncPromptsClient(environment=self._environment, token=self._token)
-        self.tools = AsyncToolsClient(environment=self._environment, token=self._token)
-        self.traces = AsyncTracesClient(environment=self._environment, token=self._token)
+    def __init__(
+        self,
+        *,
+        base_url: str,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        timeout: typing.Optional[float] = 60
+    ):
+        self._client_wrapper = AsyncClientWrapper(
+            base_url=base_url, token=token, httpx_client=httpx.AsyncClient(timeout=timeout)
+        )
+        self.agent = AsyncAgentClient(client_wrapper=self._client_wrapper)
+        self.agent_documents = AsyncAgentDocumentsClient(client_wrapper=self._client_wrapper)
+        self.tags = AsyncTagsClient(client_wrapper=self._client_wrapper)
+        self.agent_tools = AsyncAgentToolsClient(client_wrapper=self._client_wrapper)
+        self.auth = AsyncAuthClient(client_wrapper=self._client_wrapper)
+        self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
+        self.api_token = AsyncApiTokenClient(client_wrapper=self._client_wrapper)
+        self.documents = AsyncDocumentsClient(client_wrapper=self._client_wrapper)
+        self.prompts = AsyncPromptsClient(client_wrapper=self._client_wrapper)
+        self.tools = AsyncToolsClient(client_wrapper=self._client_wrapper)
+        self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)

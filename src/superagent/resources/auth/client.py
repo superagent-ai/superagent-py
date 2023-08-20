@@ -4,12 +4,11 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.http_validation_error import HttpValidationError
 
@@ -18,18 +17,21 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class AuthClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def sign_in(self, *, email: str, password: str) -> typing.Any:
-        _response = httpx.request(
+        """
+        Parameters:
+            - email: str.
+
+            - password: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/sign-in"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/auth/sign-in"),
             json=jsonable_encoder({"email": email, "password": password}),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -50,18 +52,26 @@ class AuthClient:
         name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> typing.Any:
+        """
+        Parameters:
+            - email: str.
+
+            - password: str.
+
+            - name: typing.Optional[str].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        """
         _request: typing.Dict[str, typing.Any] = {"email": email, "password": password}
         if name is not OMIT:
             _request["name"] = name
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/sign-up"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/auth/sign-up"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -77,18 +87,26 @@ class AuthClient:
     def oauth_handler(
         self, *, email: str, name: str, access_token: typing.Optional[str] = OMIT, provider: typing.Optional[str] = OMIT
     ) -> typing.Any:
+        """
+        Parameters:
+            - email: str.
+
+            - name: str.
+
+            - access_token: typing.Optional[str].
+
+            - provider: typing.Optional[str].
+        """
         _request: typing.Dict[str, typing.Any] = {"email": email, "name": name}
         if access_token is not OMIT:
             _request["access_token"] = access_token
         if provider is not OMIT:
             _request["provider"] = provider
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/oauth/callback"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/auth/oauth/callback"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -103,21 +121,23 @@ class AuthClient:
 
 
 class AsyncAuthClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def sign_in(self, *, email: str, password: str) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/sign-in"),
-                json=jsonable_encoder({"email": email, "password": password}),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Parameters:
+            - email: str.
+
+            - password: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/auth/sign-in"),
+            json=jsonable_encoder({"email": email, "password": password}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -136,21 +156,28 @@ class AsyncAuthClient:
         name: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> typing.Any:
+        """
+        Parameters:
+            - email: str.
+
+            - password: str.
+
+            - name: typing.Optional[str].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        """
         _request: typing.Dict[str, typing.Any] = {"email": email, "password": password}
         if name is not OMIT:
             _request["name"] = name
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/sign-up"),
-                json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/auth/sign-up"),
+            json=jsonable_encoder(_request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -164,21 +191,28 @@ class AsyncAuthClient:
     async def oauth_handler(
         self, *, email: str, name: str, access_token: typing.Optional[str] = OMIT, provider: typing.Optional[str] = OMIT
     ) -> typing.Any:
+        """
+        Parameters:
+            - email: str.
+
+            - name: str.
+
+            - access_token: typing.Optional[str].
+
+            - provider: typing.Optional[str].
+        """
         _request: typing.Dict[str, typing.Any] = {"email": email, "name": name}
         if access_token is not OMIT:
             _request["access_token"] = access_token
         if provider is not OMIT:
             _request["provider"] = provider
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/auth/oauth/callback"),
-                json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/auth/oauth/callback"),
+            json=jsonable_encoder(_request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:

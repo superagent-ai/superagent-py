@@ -4,12 +4,11 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.http_validation_error import HttpValidationError
 
@@ -18,17 +17,17 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class ToolsClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def list_tools(self) -> typing.Any:
-        _response = httpx.request(
+        """
+        List all tools
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/tools"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/tools"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -48,18 +47,30 @@ class ToolsClient:
         authorization: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> typing.Any:
+        """
+        Create a new tool
+
+        Parameters:
+            - name: str.
+
+            - type: str.
+
+            - description: str.
+
+            - authorization: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        """
         _request: typing.Dict[str, typing.Any] = {"name": name, "type": type, "description": description}
         if authorization is not OMIT:
             _request["authorization"] = authorization
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/tools"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/tools"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -73,12 +84,16 @@ class ToolsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_tool(self, tool_id: str) -> typing.Any:
-        _response = httpx.request(
+        """
+        Get a specific tool
+
+        Parameters:
+            - tool_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/tools/{tool_id}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -92,13 +107,19 @@ class ToolsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def patch_tool(self, tool_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
-        _response = httpx.request(
+        """
+        Patch a specific tool
+
+        Parameters:
+            - tool_id: str.
+
+            - request: typing.Dict[str, typing.Any].
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "PATCH",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/tools/{tool_id}"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -112,12 +133,16 @@ class ToolsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete_tool(self, tool_id: str) -> typing.Any:
-        _response = httpx.request(
+        """
+        Delete a specific tool
+
+        Parameters:
+            - tool_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/tools/{tool_id}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -132,20 +157,19 @@ class ToolsClient:
 
 
 class AsyncToolsClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def list_tools(self) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/tools"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        List all tools
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/tools"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         try:
@@ -163,21 +187,32 @@ class AsyncToolsClient:
         authorization: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> typing.Any:
+        """
+        Create a new tool
+
+        Parameters:
+            - name: str.
+
+            - type: str.
+
+            - description: str.
+
+            - authorization: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+        """
         _request: typing.Dict[str, typing.Any] = {"name": name, "type": type, "description": description}
         if authorization is not OMIT:
             _request["authorization"] = authorization
         if metadata is not OMIT:
             _request["metadata"] = metadata
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/tools"),
-                json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/tools"),
+            json=jsonable_encoder(_request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -189,15 +224,18 @@ class AsyncToolsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_tool(self, tool_id: str) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Get a specific tool
+
+        Parameters:
+            - tool_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/tools/{tool_id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -209,16 +247,21 @@ class AsyncToolsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def patch_tool(self, tool_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "PATCH",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Patch a specific tool
+
+        Parameters:
+            - tool_id: str.
+
+            - request: typing.Dict[str, typing.Any].
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "PATCH",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/tools/{tool_id}"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -230,15 +273,18 @@ class AsyncToolsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete_tool(self, tool_id: str) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "DELETE",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/tools/{tool_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Delete a specific tool
+
+        Parameters:
+            - tool_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/tools/{tool_id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:

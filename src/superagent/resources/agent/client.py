@@ -4,12 +4,11 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.http_validation_error import HttpValidationError
 
@@ -18,17 +17,17 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class AgentClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def list_all_agents(self) -> typing.Any:
-        _response = httpx.request(
+        """
+        List all agents
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -50,6 +49,24 @@ class AgentClient:
         has_memory: typing.Optional[bool] = OMIT,
         prompt_id: typing.Optional[str] = OMIT,
     ) -> typing.Any:
+        """
+        Create a new agent
+
+        Parameters:
+            - name: str.
+
+            - type: str.
+
+            - description: typing.Optional[str].
+
+            - avatar_url: typing.Optional[str].
+
+            - llm: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - has_memory: typing.Optional[bool].
+
+            - prompt_id: typing.Optional[str].
+        """
         _request: typing.Dict[str, typing.Any] = {"name": name, "type": type}
         if description is not OMIT:
             _request["description"] = description
@@ -61,13 +78,11 @@ class AgentClient:
             _request["hasMemory"] = has_memory
         if prompt_id is not OMIT:
             _request["promptId"] = prompt_id
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -81,12 +96,13 @@ class AgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def list_library_agents(self) -> typing.Any:
-        _response = httpx.request(
+        """
+        List all library agents
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents/library"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents/library"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -98,12 +114,16 @@ class AgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_agent(self, agent_id: str) -> typing.Any:
-        _response = httpx.request(
+        """
+        Get a specific agent
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -117,13 +137,19 @@ class AgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def patch_agent(self, agent_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
-        _response = httpx.request(
+        """
+        Patch a specific agent
+
+        Parameters:
+            - agent_id: str.
+
+            - request: typing.Dict[str, typing.Any].
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "PATCH",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -137,12 +163,16 @@ class AgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete_agent(self, agent_id: str) -> typing.Any:
-        _response = httpx.request(
+        """
+        Delete a specific agent
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -163,18 +193,28 @@ class AgentClient:
         has_streaming: typing.Optional[bool] = OMIT,
         session: typing.Optional[str] = OMIT,
     ) -> typing.Any:
+        """
+        Invoke a specific agent
+
+        Parameters:
+            - agent_id: str.
+
+            - input: typing.Dict[str, typing.Any].
+
+            - has_streaming: typing.Optional[bool].
+
+            - session: typing.Optional[str].
+        """
         _request: typing.Dict[str, typing.Any] = {"input": input}
         if has_streaming is not OMIT:
             _request["has_streaming"] = has_streaming
         if session is not OMIT:
             _request["session"] = session
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}/predict"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/predict"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -189,20 +229,19 @@ class AgentClient:
 
 
 class AsyncAgentClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def list_all_agents(self) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        List all agents
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         try:
@@ -222,6 +261,24 @@ class AsyncAgentClient:
         has_memory: typing.Optional[bool] = OMIT,
         prompt_id: typing.Optional[str] = OMIT,
     ) -> typing.Any:
+        """
+        Create a new agent
+
+        Parameters:
+            - name: str.
+
+            - type: str.
+
+            - description: typing.Optional[str].
+
+            - avatar_url: typing.Optional[str].
+
+            - llm: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - has_memory: typing.Optional[bool].
+
+            - prompt_id: typing.Optional[str].
+        """
         _request: typing.Dict[str, typing.Any] = {"name": name, "type": type}
         if description is not OMIT:
             _request["description"] = description
@@ -233,16 +290,13 @@ class AsyncAgentClient:
             _request["hasMemory"] = has_memory
         if prompt_id is not OMIT:
             _request["promptId"] = prompt_id
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents"),
-                json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
+            json=jsonable_encoder(_request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -254,15 +308,15 @@ class AsyncAgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def list_library_agents(self) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/agents/library"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        List all library agents
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents/library"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         try:
@@ -272,15 +326,18 @@ class AsyncAgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_agent(self, agent_id: str) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Get a specific agent
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -292,16 +349,21 @@ class AsyncAgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def patch_agent(self, agent_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "PATCH",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Patch a specific agent
+
+        Parameters:
+            - agent_id: str.
+
+            - request: typing.Dict[str, typing.Any].
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "PATCH",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -313,15 +375,18 @@ class AsyncAgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete_agent(self, agent_id: str) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "DELETE",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Delete a specific agent
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -340,21 +405,30 @@ class AsyncAgentClient:
         has_streaming: typing.Optional[bool] = OMIT,
         session: typing.Optional[str] = OMIT,
     ) -> typing.Any:
+        """
+        Invoke a specific agent
+
+        Parameters:
+            - agent_id: str.
+
+            - input: typing.Dict[str, typing.Any].
+
+            - has_streaming: typing.Optional[bool].
+
+            - session: typing.Optional[str].
+        """
         _request: typing.Dict[str, typing.Any] = {"input": input}
         if has_streaming is not OMIT:
             _request["has_streaming"] = has_streaming
         if session is not OMIT:
             _request["session"] = session
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/agents/{agent_id}/predict"),
-                json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/predict"),
+            json=jsonable_encoder(_request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:

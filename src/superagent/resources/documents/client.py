@@ -4,12 +4,11 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.http_validation_error import HttpValidationError
 
@@ -18,17 +17,17 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class DocumentsClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     def list_documents(self) -> typing.Any:
-        _response = httpx.request(
+        """
+        List all documents
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/documents"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/documents"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -53,6 +52,30 @@ class DocumentsClient:
         to_page: typing.Optional[int] = OMIT,
         splitter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> typing.Any:
+        """
+        Create a new document
+
+        Parameters:
+            - type: str.
+
+            - url: typing.Optional[str].
+
+            - description: typing.Optional[str].
+
+            - content: typing.Optional[str].
+
+            - name: str.
+
+            - authorization: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - from_page: typing.Optional[int].
+
+            - to_page: typing.Optional[int].
+
+            - splitter: typing.Optional[typing.Dict[str, typing.Any]].
+        """
         _request: typing.Dict[str, typing.Any] = {"type": type, "name": name}
         if url is not OMIT:
             _request["url"] = url
@@ -70,13 +93,11 @@ class DocumentsClient:
             _request["to_page"] = to_page
         if splitter is not OMIT:
             _request["splitter"] = splitter
-        _response = httpx.request(
+        _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "api/v1/documents"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/documents"),
             json=jsonable_encoder(_request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -90,12 +111,16 @@ class DocumentsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_document(self, document_id: str) -> typing.Any:
-        _response = httpx.request(
+        """
+        Get a specific document
+
+        Parameters:
+            - document_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/documents/{document_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/documents/{document_id}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -109,13 +134,19 @@ class DocumentsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def patch_document(self, document_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
-        _response = httpx.request(
+        """
+        Patch a specific document
+
+        Parameters:
+            - document_id: str.
+
+            - request: typing.Dict[str, typing.Any].
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "PATCH",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/documents/{document_id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/documents/{document_id}"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -129,12 +160,16 @@ class DocumentsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def delete_document(self, document_id: str) -> typing.Any:
-        _response = httpx.request(
+        """
+        Delete a specific document
+
+        Parameters:
+            - document_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"api/v1/documents/{document_id}"),
-            headers=remove_none_from_headers(
-                {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-            ),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/documents/{document_id}"),
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -149,20 +184,19 @@ class DocumentsClient:
 
 
 class AsyncDocumentsClient:
-    def __init__(self, *, environment: str, token: typing.Optional[str] = None):
-        self._environment = environment
-        self._token = token
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
 
     async def list_documents(self) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/documents"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        List all documents
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/documents"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         try:
@@ -185,6 +219,30 @@ class AsyncDocumentsClient:
         to_page: typing.Optional[int] = OMIT,
         splitter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> typing.Any:
+        """
+        Create a new document
+
+        Parameters:
+            - type: str.
+
+            - url: typing.Optional[str].
+
+            - description: typing.Optional[str].
+
+            - content: typing.Optional[str].
+
+            - name: str.
+
+            - authorization: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - from_page: typing.Optional[int].
+
+            - to_page: typing.Optional[int].
+
+            - splitter: typing.Optional[typing.Dict[str, typing.Any]].
+        """
         _request: typing.Dict[str, typing.Any] = {"type": type, "name": name}
         if url is not OMIT:
             _request["url"] = url
@@ -202,16 +260,13 @@ class AsyncDocumentsClient:
             _request["to_page"] = to_page
         if splitter is not OMIT:
             _request["splitter"] = splitter
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "POST",
-                urllib.parse.urljoin(f"{self._environment}/", "api/v1/documents"),
-                json=jsonable_encoder(_request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/documents"),
+            json=jsonable_encoder(_request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -223,15 +278,18 @@ class AsyncDocumentsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_document(self, document_id: str) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "GET",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/documents/{document_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Get a specific document
+
+        Parameters:
+            - document_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/documents/{document_id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -243,16 +301,21 @@ class AsyncDocumentsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def patch_document(self, document_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "PATCH",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/documents/{document_id}"),
-                json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Patch a specific document
+
+        Parameters:
+            - document_id: str.
+
+            - request: typing.Dict[str, typing.Any].
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "PATCH",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/documents/{document_id}"),
+            json=jsonable_encoder(request),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
@@ -264,15 +327,18 @@ class AsyncDocumentsClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def delete_document(self, document_id: str) -> typing.Any:
-        async with httpx.AsyncClient() as _client:
-            _response = await _client.request(
-                "DELETE",
-                urllib.parse.urljoin(f"{self._environment}/", f"api/v1/documents/{document_id}"),
-                headers=remove_none_from_headers(
-                    {"Authorization": f"Bearer {self._token}" if self._token is not None else None}
-                ),
-                timeout=60,
-            )
+        """
+        Delete a specific document
+
+        Parameters:
+            - document_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/documents/{document_id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
