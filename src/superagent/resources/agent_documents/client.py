@@ -11,6 +11,8 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_dict import remove_none_from_dict
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
+from ...types.agent_document_list_ouput import AgentDocumentListOuput
+from ...types.agent_document_output import AgentDocumentOutput
 from ...types.http_validation_error import HttpValidationError
 
 # this is used as the default value for optional parameters
@@ -21,7 +23,7 @@ class AgentDocumentsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_agent_documents(self, *, expand: typing.Optional[bool] = None) -> typing.Any:
+    def list_agent_documents(self, *, expand: typing.Optional[bool] = None) -> AgentDocumentListOuput:
         """
         List all agent documents
 
@@ -36,7 +38,7 @@ class AgentDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentDocumentListOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -45,7 +47,7 @@ class AgentDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create_agent_document(self, *, agent_id: str, document_id: str) -> typing.Any:
+    def create_agent_document(self, *, agent_id: str, document_id: str) -> AgentDocumentOutput:
         """
         Create a agent document
 
@@ -62,7 +64,7 @@ class AgentDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentDocumentOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -71,7 +73,7 @@ class AgentDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_agent_document(self, agent_document_id: str) -> typing.Any:
+    def get_agent_document(self, agent_document_id: str) -> AgentDocumentOutput:
         """
         Get a specific agent document
 
@@ -87,7 +89,7 @@ class AgentDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentDocumentOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -96,7 +98,7 @@ class AgentDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_agent_document(self, agent_document_id: str) -> typing.Any:
+    def delete_agent_document(self, agent_document_id: str) -> AgentDocumentOutput:
         """
         Delete a specific agent document
 
@@ -112,7 +114,7 @@ class AgentDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentDocumentOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -126,7 +128,7 @@ class AsyncAgentDocumentsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_agent_documents(self, *, expand: typing.Optional[bool] = None) -> typing.Any:
+    async def list_agent_documents(self, *, expand: typing.Optional[bool] = None) -> AgentDocumentListOuput:
         """
         List all agent documents
 
@@ -141,7 +143,7 @@ class AsyncAgentDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentDocumentListOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -150,7 +152,7 @@ class AsyncAgentDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create_agent_document(self, *, agent_id: str, document_id: str) -> typing.Any:
+    async def create_agent_document(self, *, agent_id: str, document_id: str) -> AgentDocumentOutput:
         """
         Create a agent document
 
@@ -167,7 +169,7 @@ class AsyncAgentDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentDocumentOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -176,7 +178,7 @@ class AsyncAgentDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_agent_document(self, agent_document_id: str) -> typing.Any:
+    async def get_agent_document(self, agent_document_id: str) -> AgentDocumentOutput:
         """
         Get a specific agent document
 
@@ -192,7 +194,7 @@ class AsyncAgentDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentDocumentOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -201,7 +203,7 @@ class AsyncAgentDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_agent_document(self, agent_document_id: str) -> typing.Any:
+    async def delete_agent_document(self, agent_document_id: str) -> AgentDocumentOutput:
         """
         Delete a specific agent document
 
@@ -217,7 +219,7 @@ class AsyncAgentDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentDocumentOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:

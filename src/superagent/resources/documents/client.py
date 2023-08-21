@@ -10,6 +10,8 @@ from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
+from ...types.document_list_output import DocumentListOutput
+from ...types.document_ouput import DocumentOuput
 from ...types.http_validation_error import HttpValidationError
 
 # this is used as the default value for optional parameters
@@ -20,7 +22,7 @@ class DocumentsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_documents(self) -> typing.Any:
+    def list_documents(self) -> DocumentListOutput:
         """
         List all documents
         """
@@ -31,7 +33,7 @@ class DocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentListOutput, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -51,7 +53,7 @@ class DocumentsClient:
         from_page: typing.Optional[int] = OMIT,
         to_page: typing.Optional[int] = OMIT,
         splitter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-    ) -> typing.Any:
+    ) -> DocumentOuput:
         """
         Create a new document
 
@@ -101,7 +103,7 @@ class DocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -110,7 +112,7 @@ class DocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_document(self, document_id: str) -> typing.Any:
+    def get_document(self, document_id: str) -> DocumentOuput:
         """
         Get a specific document
 
@@ -124,7 +126,7 @@ class DocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -133,7 +135,7 @@ class DocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def patch_document(self, document_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
+    def patch_document(self, document_id: str, *, request: typing.Dict[str, typing.Any]) -> DocumentOuput:
         """
         Patch a specific document
 
@@ -150,7 +152,7 @@ class DocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -159,7 +161,7 @@ class DocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_document(self, document_id: str) -> typing.Any:
+    def delete_document(self, document_id: str) -> DocumentOuput:
         """
         Delete a specific document
 
@@ -173,7 +175,7 @@ class DocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -187,7 +189,7 @@ class AsyncDocumentsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_documents(self) -> typing.Any:
+    async def list_documents(self) -> DocumentListOutput:
         """
         List all documents
         """
@@ -198,7 +200,7 @@ class AsyncDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentListOutput, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -218,7 +220,7 @@ class AsyncDocumentsClient:
         from_page: typing.Optional[int] = OMIT,
         to_page: typing.Optional[int] = OMIT,
         splitter: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-    ) -> typing.Any:
+    ) -> DocumentOuput:
         """
         Create a new document
 
@@ -268,7 +270,7 @@ class AsyncDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -277,7 +279,7 @@ class AsyncDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_document(self, document_id: str) -> typing.Any:
+    async def get_document(self, document_id: str) -> DocumentOuput:
         """
         Get a specific document
 
@@ -291,7 +293,7 @@ class AsyncDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -300,7 +302,7 @@ class AsyncDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def patch_document(self, document_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
+    async def patch_document(self, document_id: str, *, request: typing.Dict[str, typing.Any]) -> DocumentOuput:
         """
         Patch a specific document
 
@@ -317,7 +319,7 @@ class AsyncDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -326,7 +328,7 @@ class AsyncDocumentsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_document(self, document_id: str) -> typing.Any:
+    async def delete_document(self, document_id: str) -> DocumentOuput:
         """
         Delete a specific document
 
@@ -340,7 +342,7 @@ class AsyncDocumentsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(DocumentOuput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:

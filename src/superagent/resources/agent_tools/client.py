@@ -11,6 +11,8 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_dict import remove_none_from_dict
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
+from ...types.agent_tool_list_output import AgentToolListOutput
+from ...types.agent_tool_output import AgentToolOutput
 from ...types.http_validation_error import HttpValidationError
 
 # this is used as the default value for optional parameters
@@ -21,7 +23,7 @@ class AgentToolsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_agent_tools(self, *, expand: typing.Optional[bool] = None) -> typing.Any:
+    def list_agent_tools(self, *, expand: typing.Optional[bool] = None) -> AgentToolListOutput:
         """
         List all agent tools
 
@@ -36,7 +38,7 @@ class AgentToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentToolListOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -45,7 +47,7 @@ class AgentToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create_agent_tool(self, *, agent_id: str, tool_id: str) -> typing.Any:
+    def create_agent_tool(self, *, agent_id: str, tool_id: str) -> AgentToolOutput:
         """
         Create a agent tool
 
@@ -62,7 +64,7 @@ class AgentToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -71,7 +73,7 @@ class AgentToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_agent_tool(self, agent_tool_id: str) -> typing.Any:
+    def get_agent_tool(self, agent_tool_id: str) -> AgentToolOutput:
         """
         Get a specific agent tool
 
@@ -85,7 +87,7 @@ class AgentToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -94,7 +96,7 @@ class AgentToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_agent_tool(self, agent_tool_id: str) -> typing.Any:
+    def delete_agent_tool(self, agent_tool_id: str) -> AgentToolOutput:
         """
         Delete a specific agent tool
 
@@ -108,7 +110,7 @@ class AgentToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -122,7 +124,7 @@ class AsyncAgentToolsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_agent_tools(self, *, expand: typing.Optional[bool] = None) -> typing.Any:
+    async def list_agent_tools(self, *, expand: typing.Optional[bool] = None) -> AgentToolListOutput:
         """
         List all agent tools
 
@@ -137,7 +139,7 @@ class AsyncAgentToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentToolListOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -146,7 +148,7 @@ class AsyncAgentToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create_agent_tool(self, *, agent_id: str, tool_id: str) -> typing.Any:
+    async def create_agent_tool(self, *, agent_id: str, tool_id: str) -> AgentToolOutput:
         """
         Create a agent tool
 
@@ -163,7 +165,7 @@ class AsyncAgentToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -172,7 +174,7 @@ class AsyncAgentToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_agent_tool(self, agent_tool_id: str) -> typing.Any:
+    async def get_agent_tool(self, agent_tool_id: str) -> AgentToolOutput:
         """
         Get a specific agent tool
 
@@ -186,7 +188,7 @@ class AsyncAgentToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -195,7 +197,7 @@ class AsyncAgentToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_agent_tool(self, agent_tool_id: str) -> typing.Any:
+    async def delete_agent_tool(self, agent_tool_id: str) -> AgentToolOutput:
         """
         Delete a specific agent tool
 
@@ -209,7 +211,7 @@ class AsyncAgentToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:

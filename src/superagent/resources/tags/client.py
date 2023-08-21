@@ -11,6 +11,8 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.http_validation_error import HttpValidationError
+from ...types.tag_list_output import TagListOutput
+from ...types.tag_output import TagOutput
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -20,7 +22,7 @@ class TagsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_tags(self) -> typing.Any:
+    def list_tags(self) -> TagListOutput:
         """
         List all tags
         """
@@ -31,14 +33,14 @@ class TagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagListOutput, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create_a_tag(self, *, name: str, color: str) -> typing.Any:
+    def create_a_tag(self, *, name: str, color: str) -> TagOutput:
         """
         Create a new tag
 
@@ -55,7 +57,7 @@ class TagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -64,7 +66,7 @@ class TagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_tag(self, tag_id: str) -> typing.Any:
+    def get_tag(self, tag_id: str) -> TagOutput:
         """
         Get a specific tag
 
@@ -78,7 +80,7 @@ class TagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -87,7 +89,7 @@ class TagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def patch_tag(self, tag_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
+    def patch_tag(self, tag_id: str, *, request: typing.Dict[str, typing.Any]) -> TagOutput:
         """
         Patch a specific tag
 
@@ -104,7 +106,7 @@ class TagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -113,7 +115,7 @@ class TagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_tag(self, tag_id: str) -> typing.Any:
+    def delete_tag(self, tag_id: str) -> TagOutput:
         """
         Delete a specific tag
 
@@ -127,7 +129,7 @@ class TagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -141,7 +143,7 @@ class AsyncTagsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_tags(self) -> typing.Any:
+    async def list_tags(self) -> TagListOutput:
         """
         List all tags
         """
@@ -152,14 +154,14 @@ class AsyncTagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagListOutput, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create_a_tag(self, *, name: str, color: str) -> typing.Any:
+    async def create_a_tag(self, *, name: str, color: str) -> TagOutput:
         """
         Create a new tag
 
@@ -176,7 +178,7 @@ class AsyncTagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -185,7 +187,7 @@ class AsyncTagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_tag(self, tag_id: str) -> typing.Any:
+    async def get_tag(self, tag_id: str) -> TagOutput:
         """
         Get a specific tag
 
@@ -199,7 +201,7 @@ class AsyncTagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -208,7 +210,7 @@ class AsyncTagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def patch_tag(self, tag_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
+    async def patch_tag(self, tag_id: str, *, request: typing.Dict[str, typing.Any]) -> TagOutput:
         """
         Patch a specific tag
 
@@ -225,7 +227,7 @@ class AsyncTagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -234,7 +236,7 @@ class AsyncTagsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_tag(self, tag_id: str) -> typing.Any:
+    async def delete_tag(self, tag_id: str) -> TagOutput:
         """
         Delete a specific tag
 
@@ -248,7 +250,7 @@ class AsyncTagsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(TagOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:

@@ -11,6 +11,8 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.http_validation_error import HttpValidationError
+from ...types.prompt_list_output import PromptListOutput
+from ...types.prompt_output import PromptOutput
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -20,7 +22,7 @@ class PromptsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_prompts(self) -> typing.Any:
+    def list_prompts(self) -> PromptListOutput:
         """
         List all prompts
         """
@@ -31,14 +33,14 @@ class PromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptListOutput, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create_a_prompt(self, *, name: str, input_variables: typing.List[typing.Any], template: str) -> typing.Any:
+    def create_a_prompt(self, *, name: str, input_variables: typing.List[typing.Any], template: str) -> PromptOutput:
         """
         Create a new prompt
 
@@ -57,7 +59,7 @@ class PromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -66,7 +68,7 @@ class PromptsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_prompt(self, prompt_id: str) -> typing.Any:
+    def get_prompt(self, prompt_id: str) -> PromptOutput:
         """
         Get a specific prompt
 
@@ -80,7 +82,7 @@ class PromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -89,7 +91,7 @@ class PromptsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def patch_prompt(self, prompt_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
+    def patch_prompt(self, prompt_id: str, *, request: typing.Dict[str, typing.Any]) -> PromptOutput:
         """
         Patch a specific prompt
 
@@ -106,7 +108,7 @@ class PromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -115,7 +117,7 @@ class PromptsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_prompt(self, prompt_id: str) -> typing.Any:
+    def delete_prompt(self, prompt_id: str) -> PromptOutput:
         """
         Delete a specific prompt
 
@@ -129,7 +131,7 @@ class PromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -143,7 +145,7 @@ class AsyncPromptsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_prompts(self) -> typing.Any:
+    async def list_prompts(self) -> PromptListOutput:
         """
         List all prompts
         """
@@ -154,7 +156,7 @@ class AsyncPromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptListOutput, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -163,7 +165,7 @@ class AsyncPromptsClient:
 
     async def create_a_prompt(
         self, *, name: str, input_variables: typing.List[typing.Any], template: str
-    ) -> typing.Any:
+    ) -> PromptOutput:
         """
         Create a new prompt
 
@@ -182,7 +184,7 @@ class AsyncPromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -191,7 +193,7 @@ class AsyncPromptsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_prompt(self, prompt_id: str) -> typing.Any:
+    async def get_prompt(self, prompt_id: str) -> PromptOutput:
         """
         Get a specific prompt
 
@@ -205,7 +207,7 @@ class AsyncPromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -214,7 +216,7 @@ class AsyncPromptsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def patch_prompt(self, prompt_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
+    async def patch_prompt(self, prompt_id: str, *, request: typing.Dict[str, typing.Any]) -> PromptOutput:
         """
         Patch a specific prompt
 
@@ -231,7 +233,7 @@ class AsyncPromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -240,7 +242,7 @@ class AsyncPromptsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_prompt(self, prompt_id: str) -> typing.Any:
+    async def delete_prompt(self, prompt_id: str) -> PromptOutput:
         """
         Delete a specific prompt
 
@@ -254,7 +256,7 @@ class AsyncPromptsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(PromptOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:

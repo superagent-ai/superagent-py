@@ -11,6 +11,8 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.http_validation_error import HttpValidationError
+from ...types.tool_list_output import ToolListOutput
+from ...types.tool_output import ToolOutput
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -20,7 +22,7 @@ class ToolsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_tools(self) -> typing.Any:
+    def list_tools(self) -> ToolListOutput:
         """
         List all tools
         """
@@ -31,7 +33,7 @@ class ToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolListOutput, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -44,9 +46,10 @@ class ToolsClient:
         name: str,
         type: str,
         description: str,
+        return_direct: typing.Optional[bool] = OMIT,
         authorization: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-    ) -> typing.Any:
+    ) -> ToolOutput:
         """
         Create a new tool
 
@@ -57,11 +60,15 @@ class ToolsClient:
 
             - description: str.
 
+            - return_direct: typing.Optional[bool].
+
             - authorization: typing.Optional[typing.Dict[str, typing.Any]].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name, "type": type, "description": description}
+        if return_direct is not OMIT:
+            _request["returnDirect"] = return_direct
         if authorization is not OMIT:
             _request["authorization"] = authorization
         if metadata is not OMIT:
@@ -74,7 +81,7 @@ class ToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -83,7 +90,7 @@ class ToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get_tool(self, tool_id: str) -> typing.Any:
+    def get_tool(self, tool_id: str) -> ToolOutput:
         """
         Get a specific tool
 
@@ -97,7 +104,7 @@ class ToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -106,7 +113,7 @@ class ToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def patch_tool(self, tool_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
+    def patch_tool(self, tool_id: str, *, request: typing.Dict[str, typing.Any]) -> ToolOutput:
         """
         Patch a specific tool
 
@@ -123,7 +130,7 @@ class ToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -132,7 +139,7 @@ class ToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_tool(self, tool_id: str) -> typing.Any:
+    def delete_tool(self, tool_id: str) -> ToolOutput:
         """
         Delete a specific tool
 
@@ -146,7 +153,7 @@ class ToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -160,7 +167,7 @@ class AsyncToolsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_tools(self) -> typing.Any:
+    async def list_tools(self) -> ToolListOutput:
         """
         List all tools
         """
@@ -171,7 +178,7 @@ class AsyncToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolListOutput, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -184,9 +191,10 @@ class AsyncToolsClient:
         name: str,
         type: str,
         description: str,
+        return_direct: typing.Optional[bool] = OMIT,
         authorization: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-    ) -> typing.Any:
+    ) -> ToolOutput:
         """
         Create a new tool
 
@@ -197,11 +205,15 @@ class AsyncToolsClient:
 
             - description: str.
 
+            - return_direct: typing.Optional[bool].
+
             - authorization: typing.Optional[typing.Dict[str, typing.Any]].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name, "type": type, "description": description}
+        if return_direct is not OMIT:
+            _request["returnDirect"] = return_direct
         if authorization is not OMIT:
             _request["authorization"] = authorization
         if metadata is not OMIT:
@@ -214,7 +226,7 @@ class AsyncToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -223,7 +235,7 @@ class AsyncToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get_tool(self, tool_id: str) -> typing.Any:
+    async def get_tool(self, tool_id: str) -> ToolOutput:
         """
         Get a specific tool
 
@@ -237,7 +249,7 @@ class AsyncToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -246,7 +258,7 @@ class AsyncToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def patch_tool(self, tool_id: str, *, request: typing.Dict[str, typing.Any]) -> typing.Any:
+    async def patch_tool(self, tool_id: str, *, request: typing.Dict[str, typing.Any]) -> ToolOutput:
         """
         Patch a specific tool
 
@@ -263,7 +275,7 @@ class AsyncToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -272,7 +284,7 @@ class AsyncToolsClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_tool(self, tool_id: str) -> typing.Any:
+    async def delete_tool(self, tool_id: str) -> ToolOutput:
         """
         Delete a specific tool
 
@@ -286,7 +298,7 @@ class AsyncToolsClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(ToolOutput, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
