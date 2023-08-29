@@ -195,6 +195,7 @@ class AgentClient:
         input: typing.Dict[str, typing.Any],
         has_streaming: typing.Optional[bool] = OMIT,
         session: typing.Optional[str] = OMIT,
+        cache_ttl: typing.Optional[int] = OMIT,
     ) -> PredictAgentOutput:
         """
         Invoke a specific agent
@@ -207,12 +208,16 @@ class AgentClient:
             - has_streaming: typing.Optional[bool].
 
             - session: typing.Optional[str].
+
+            - cache_ttl: typing.Optional[int].
         """
         _request: typing.Dict[str, typing.Any] = {"input": input}
         if has_streaming is not OMIT:
             _request["has_streaming"] = has_streaming
         if session is not OMIT:
             _request["session"] = session
+        if cache_ttl is not OMIT:
+            _request["cache_ttl"] = cache_ttl
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/predict"),
@@ -407,6 +412,7 @@ class AsyncAgentClient:
         input: typing.Dict[str, typing.Any],
         has_streaming: typing.Optional[bool] = OMIT,
         session: typing.Optional[str] = OMIT,
+        cache_ttl: typing.Optional[int] = OMIT,
     ) -> PredictAgentOutput:
         """
         Invoke a specific agent
@@ -419,12 +425,16 @@ class AsyncAgentClient:
             - has_streaming: typing.Optional[bool].
 
             - session: typing.Optional[str].
+
+            - cache_ttl: typing.Optional[int].
         """
         _request: typing.Dict[str, typing.Any] = {"input": input}
         if has_streaming is not OMIT:
             _request["has_streaming"] = has_streaming
         if session is not OMIT:
             _request["session"] = session
+        if cache_ttl is not OMIT:
+            _request["cache_ttl"] = cache_ttl
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/predict"),
