@@ -10,10 +10,14 @@ from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
-from ...types.agent_list_output import AgentListOutput
-from ...types.agent_output import AgentOutput
+from ...types.agent_datasosurce_list import AgentDatasosurceList
+from ...types.agent_list import AgentList
+from ...types.agent_run_list import AgentRunList
+from ...types.agent_tool_list import AgentToolList
+from ...types.app_models_request_agent import AppModelsRequestAgent
+from ...types.app_models_response_agent import AppModelsResponseAgent
+from ...types.app_models_response_agent_invoke import AppModelsResponseAgentInvoke
 from ...types.http_validation_error import HttpValidationError
-from ...types.predict_agent_output import PredictAgentOutput
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -23,7 +27,7 @@ class AgentClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_all_agents(self) -> AgentListOutput:
+    def list(self) -> AgentList:
         """
         List all agents
         """
@@ -34,62 +38,29 @@ class AgentClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentListOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create_agent(
-        self,
-        *,
-        name: str,
-        type: str,
-        description: typing.Optional[str] = OMIT,
-        avatar_url: typing.Optional[str] = OMIT,
-        llm: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        has_memory: typing.Optional[bool] = OMIT,
-        prompt_id: typing.Optional[str] = OMIT,
-    ) -> AgentOutput:
+    def create(self, *, request: AppModelsRequestAgent) -> AppModelsResponseAgent:
         """
         Create a new agent
 
         Parameters:
-            - name: str.
-
-            - type: str.
-
-            - description: typing.Optional[str].
-
-            - avatar_url: typing.Optional[str].
-
-            - llm: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - has_memory: typing.Optional[bool].
-
-            - prompt_id: typing.Optional[str].
+            - request: AppModelsRequestAgent.
         """
-        _request: typing.Dict[str, typing.Any] = {"name": name, "type": type}
-        if description is not OMIT:
-            _request["description"] = description
-        if avatar_url is not OMIT:
-            _request["avatarUrl"] = avatar_url
-        if llm is not OMIT:
-            _request["llm"] = llm
-        if has_memory is not OMIT:
-            _request["hasMemory"] = has_memory
-        if prompt_id is not OMIT:
-            _request["promptId"] = prompt_id
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
-            json=jsonable_encoder(_request),
+            json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -98,27 +69,9 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def list_library_agents(self) -> AgentListOutput:
+    def get(self, agent_id: str) -> AppModelsResponseAgent:
         """
-        List all library agents
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents/library"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentListOutput, _response.json())  # type: ignore
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
-
-    def get_agent(self, agent_id: str) -> AgentOutput:
-        """
-        Get a specific agent
+        Get a single agent
 
         Parameters:
             - agent_id: str.
@@ -130,7 +83,7 @@ class AgentClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -139,14 +92,14 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def patch_agent(self, agent_id: str, *, request: typing.Dict[str, typing.Any]) -> AgentOutput:
+    def update(self, agent_id: str, *, request: AppModelsRequestAgent) -> AppModelsResponseAgent:
         """
-        Patch a specific agent
+        Patch an agent
 
         Parameters:
             - agent_id: str.
 
-            - request: typing.Dict[str, typing.Any].
+            - request: AppModelsRequestAgent.
         """
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
@@ -156,7 +109,7 @@ class AgentClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -165,9 +118,9 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_agent(self, agent_id: str) -> AgentOutput:
+    def delete(self, agent_id: str) -> typing.Any:
         """
-        Delete a specific agent
+        Delete an agent
 
         Parameters:
             - agent_id: str.
@@ -179,7 +132,7 @@ class AgentClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -188,45 +141,259 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def prompt_agent(
-        self,
-        agent_id: str,
-        *,
-        input: typing.Dict[str, typing.Any],
-        has_streaming: typing.Optional[bool] = OMIT,
-        session: typing.Optional[str] = OMIT,
-        cache_ttl: typing.Optional[int] = OMIT,
-    ) -> PredictAgentOutput:
+    def invoke(
+        self, agent_id: str, *, input: str, session_id: typing.Optional[str] = OMIT, enable_streaming: bool
+    ) -> AppModelsResponseAgentInvoke:
         """
-        Invoke a specific agent
+        Invoke an agent
 
         Parameters:
             - agent_id: str.
 
-            - input: typing.Dict[str, typing.Any].
+            - input: str.
 
-            - has_streaming: typing.Optional[bool].
+            - session_id: typing.Optional[str].
 
-            - session: typing.Optional[str].
-
-            - cache_ttl: typing.Optional[int].
+            - enable_streaming: bool.
         """
-        _request: typing.Dict[str, typing.Any] = {"input": input}
-        if has_streaming is not OMIT:
-            _request["has_streaming"] = has_streaming
-        if session is not OMIT:
-            _request["session"] = session
-        if cache_ttl is not OMIT:
-            _request["cache_ttl"] = cache_ttl
+        _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
+        if session_id is not OMIT:
+            _request["sessionId"] = session_id
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/predict"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/invoke"),
             json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(PredictAgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AppModelsResponseAgentInvoke, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def add_llm(self, agent_id: str, *, llm_id: str) -> AppModelsResponseAgent:
+        """
+        Add LLM to agent
+
+        Parameters:
+            - agent_id: str.
+
+            - llm_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/llms"),
+            json=jsonable_encoder({"llmId": llm_id}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def remove_llm(self, agent_id: str, llm_id: str) -> typing.Any:
+        """
+        Remove LLM from agent
+
+        Parameters:
+            - agent_id: str.
+
+            - llm_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/llms/{llm_id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def list_tools(self, agent_id: str) -> AgentToolList:
+        """
+        List agent tools
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AgentToolList, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def add_tool(self, agent_id: str, *, tool_id: str) -> AppModelsResponseAgent:
+        """
+        Add tool to agent
+
+        Parameters:
+            - agent_id: str.
+
+            - tool_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools"),
+            json=jsonable_encoder({"toolId": tool_id}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def remove_tool(self, agent_id: str, tool_id: str) -> typing.Any:
+        """
+        Remove tool from agent
+
+        Parameters:
+            - agent_id: str.
+
+            - tool_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools/{tool_id}"
+            ),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def list_datasources(self, agent_id: str) -> AgentDatasosurceList:
+        """
+        List agent datasources
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AgentDatasosurceList, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def add_datasource(self, agent_id: str, *, datasource_id: str) -> AppModelsResponseAgent:
+        """
+        Add datasource to agent
+
+        Parameters:
+            - agent_id: str.
+
+            - datasource_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources"),
+            json=jsonable_encoder({"datasourceId": datasource_id}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def remove_datasource(self, agent_id: str, datasource_id: str) -> typing.Any:
+        """
+        Remove datasource from agent
+
+        Parameters:
+            - agent_id: str.
+
+            - datasource_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources/{datasource_id}"
+            ),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def list_runs(self, agent_id: str) -> AgentRunList:
+        """
+        List agent runs
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/runs"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AgentRunList, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -240,7 +407,7 @@ class AsyncAgentClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_all_agents(self) -> AgentListOutput:
+    async def list(self) -> AgentList:
         """
         List all agents
         """
@@ -251,62 +418,29 @@ class AsyncAgentClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentListOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AgentList, _response.json())  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create_agent(
-        self,
-        *,
-        name: str,
-        type: str,
-        description: typing.Optional[str] = OMIT,
-        avatar_url: typing.Optional[str] = OMIT,
-        llm: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
-        has_memory: typing.Optional[bool] = OMIT,
-        prompt_id: typing.Optional[str] = OMIT,
-    ) -> AgentOutput:
+    async def create(self, *, request: AppModelsRequestAgent) -> AppModelsResponseAgent:
         """
         Create a new agent
 
         Parameters:
-            - name: str.
-
-            - type: str.
-
-            - description: typing.Optional[str].
-
-            - avatar_url: typing.Optional[str].
-
-            - llm: typing.Optional[typing.Dict[str, typing.Any]].
-
-            - has_memory: typing.Optional[bool].
-
-            - prompt_id: typing.Optional[str].
+            - request: AppModelsRequestAgent.
         """
-        _request: typing.Dict[str, typing.Any] = {"name": name, "type": type}
-        if description is not OMIT:
-            _request["description"] = description
-        if avatar_url is not OMIT:
-            _request["avatarUrl"] = avatar_url
-        if llm is not OMIT:
-            _request["llm"] = llm
-        if has_memory is not OMIT:
-            _request["hasMemory"] = has_memory
-        if prompt_id is not OMIT:
-            _request["promptId"] = prompt_id
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
-            json=jsonable_encoder(_request),
+            json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -315,27 +449,9 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def list_library_agents(self) -> AgentListOutput:
+    async def get(self, agent_id: str) -> AppModelsResponseAgent:
         """
-        List all library agents
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents/library"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
-        )
-        if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentListOutput, _response.json())  # type: ignore
-        try:
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def get_agent(self, agent_id: str) -> AgentOutput:
-        """
-        Get a specific agent
+        Get a single agent
 
         Parameters:
             - agent_id: str.
@@ -347,7 +463,7 @@ class AsyncAgentClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -356,14 +472,14 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def patch_agent(self, agent_id: str, *, request: typing.Dict[str, typing.Any]) -> AgentOutput:
+    async def update(self, agent_id: str, *, request: AppModelsRequestAgent) -> AppModelsResponseAgent:
         """
-        Patch a specific agent
+        Patch an agent
 
         Parameters:
             - agent_id: str.
 
-            - request: typing.Dict[str, typing.Any].
+            - request: AppModelsRequestAgent.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
@@ -373,7 +489,7 @@ class AsyncAgentClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -382,9 +498,9 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_agent(self, agent_id: str) -> AgentOutput:
+    async def delete(self, agent_id: str) -> typing.Any:
         """
-        Delete a specific agent
+        Delete an agent
 
         Parameters:
             - agent_id: str.
@@ -396,7 +512,7 @@ class AsyncAgentClient:
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(AgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
@@ -405,45 +521,259 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def prompt_agent(
-        self,
-        agent_id: str,
-        *,
-        input: typing.Dict[str, typing.Any],
-        has_streaming: typing.Optional[bool] = OMIT,
-        session: typing.Optional[str] = OMIT,
-        cache_ttl: typing.Optional[int] = OMIT,
-    ) -> PredictAgentOutput:
+    async def invoke(
+        self, agent_id: str, *, input: str, session_id: typing.Optional[str] = OMIT, enable_streaming: bool
+    ) -> AppModelsResponseAgentInvoke:
         """
-        Invoke a specific agent
+        Invoke an agent
 
         Parameters:
             - agent_id: str.
 
-            - input: typing.Dict[str, typing.Any].
+            - input: str.
 
-            - has_streaming: typing.Optional[bool].
+            - session_id: typing.Optional[str].
 
-            - session: typing.Optional[str].
-
-            - cache_ttl: typing.Optional[int].
+            - enable_streaming: bool.
         """
-        _request: typing.Dict[str, typing.Any] = {"input": input}
-        if has_streaming is not OMIT:
-            _request["has_streaming"] = has_streaming
-        if session is not OMIT:
-            _request["session"] = session
-        if cache_ttl is not OMIT:
-            _request["cache_ttl"] = cache_ttl
+        _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
+        if session_id is not OMIT:
+            _request["sessionId"] = session_id
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/predict"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/invoke"),
             json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
-            return pydantic.parse_obj_as(PredictAgentOutput, _response.json())  # type: ignore
+            return pydantic.parse_obj_as(AppModelsResponseAgentInvoke, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def add_llm(self, agent_id: str, *, llm_id: str) -> AppModelsResponseAgent:
+        """
+        Add LLM to agent
+
+        Parameters:
+            - agent_id: str.
+
+            - llm_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/llms"),
+            json=jsonable_encoder({"llmId": llm_id}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def remove_llm(self, agent_id: str, llm_id: str) -> typing.Any:
+        """
+        Remove LLM from agent
+
+        Parameters:
+            - agent_id: str.
+
+            - llm_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/llms/{llm_id}"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def list_tools(self, agent_id: str) -> AgentToolList:
+        """
+        List agent tools
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AgentToolList, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def add_tool(self, agent_id: str, *, tool_id: str) -> AppModelsResponseAgent:
+        """
+        Add tool to agent
+
+        Parameters:
+            - agent_id: str.
+
+            - tool_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools"),
+            json=jsonable_encoder({"toolId": tool_id}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def remove_tool(self, agent_id: str, tool_id: str) -> typing.Any:
+        """
+        Remove tool from agent
+
+        Parameters:
+            - agent_id: str.
+
+            - tool_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools/{tool_id}"
+            ),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def list_datasources(self, agent_id: str) -> AgentDatasosurceList:
+        """
+        List agent datasources
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AgentDatasosurceList, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def add_datasource(self, agent_id: str, *, datasource_id: str) -> AppModelsResponseAgent:
+        """
+        Add datasource to agent
+
+        Parameters:
+            - agent_id: str.
+
+            - datasource_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "POST",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources"),
+            json=jsonable_encoder({"datasourceId": datasource_id}),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def remove_datasource(self, agent_id: str, datasource_id: str) -> typing.Any:
+        """
+        Remove datasource from agent
+
+        Parameters:
+            - agent_id: str.
+
+            - datasource_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "DELETE",
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources/{datasource_id}"
+            ),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
+        try:
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def list_runs(self, agent_id: str) -> AgentRunList:
+        """
+        List agent runs
+
+        Parameters:
+            - agent_id: str.
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "GET",
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/runs"),
+            headers=self._client_wrapper.get_headers(),
+            timeout=60,
+        )
+        if 200 <= _response.status_code < 300:
+            return pydantic.parse_obj_as(AgentRunList, _response.json())  # type: ignore
         if _response.status_code == 422:
             raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:

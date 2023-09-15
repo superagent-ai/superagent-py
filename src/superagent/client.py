@@ -6,16 +6,11 @@ import httpx
 
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .resources.agent.client import AgentClient, AsyncAgentClient
-from .resources.agent_documents.client import AgentDocumentsClient, AsyncAgentDocumentsClient
-from .resources.agent_tools.client import AgentToolsClient, AsyncAgentToolsClient
-from .resources.api_token.client import ApiTokenClient, AsyncApiTokenClient
-from .resources.auth.client import AsyncAuthClient, AuthClient
-from .resources.documents.client import AsyncDocumentsClient, DocumentsClient
-from .resources.prompts.client import AsyncPromptsClient, PromptsClient
-from .resources.tags.client import AsyncTagsClient, TagsClient
-from .resources.tools.client import AsyncToolsClient, ToolsClient
-from .resources.traces.client import AsyncTracesClient, TracesClient
-from .resources.user.client import AsyncUserClient, UserClient
+from .resources.api_user.client import ApiUserClient, AsyncApiUserClient
+from .resources.datasource.client import AsyncDatasourceClient, DatasourceClient
+from .resources.llm.client import AsyncLlmClient, LlmClient
+from .resources.tool.client import AsyncToolClient, ToolClient
+from .resources.workflow.client import AsyncWorkflowClient, WorkflowClient
 
 
 class Superagent:
@@ -30,16 +25,11 @@ class Superagent:
             base_url=base_url, token=token, httpx_client=httpx.Client(timeout=timeout)
         )
         self.agent = AgentClient(client_wrapper=self._client_wrapper)
-        self.agent_documents = AgentDocumentsClient(client_wrapper=self._client_wrapper)
-        self.tags = TagsClient(client_wrapper=self._client_wrapper)
-        self.agent_tools = AgentToolsClient(client_wrapper=self._client_wrapper)
-        self.auth = AuthClient(client_wrapper=self._client_wrapper)
-        self.user = UserClient(client_wrapper=self._client_wrapper)
-        self.api_token = ApiTokenClient(client_wrapper=self._client_wrapper)
-        self.documents = DocumentsClient(client_wrapper=self._client_wrapper)
-        self.prompts = PromptsClient(client_wrapper=self._client_wrapper)
-        self.tools = ToolsClient(client_wrapper=self._client_wrapper)
-        self.traces = TracesClient(client_wrapper=self._client_wrapper)
+        self.llm = LlmClient(client_wrapper=self._client_wrapper)
+        self.api_user = ApiUserClient(client_wrapper=self._client_wrapper)
+        self.datasource = DatasourceClient(client_wrapper=self._client_wrapper)
+        self.tool = ToolClient(client_wrapper=self._client_wrapper)
+        self.workflow = WorkflowClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncSuperagent:
@@ -54,13 +44,8 @@ class AsyncSuperagent:
             base_url=base_url, token=token, httpx_client=httpx.AsyncClient(timeout=timeout)
         )
         self.agent = AsyncAgentClient(client_wrapper=self._client_wrapper)
-        self.agent_documents = AsyncAgentDocumentsClient(client_wrapper=self._client_wrapper)
-        self.tags = AsyncTagsClient(client_wrapper=self._client_wrapper)
-        self.agent_tools = AsyncAgentToolsClient(client_wrapper=self._client_wrapper)
-        self.auth = AsyncAuthClient(client_wrapper=self._client_wrapper)
-        self.user = AsyncUserClient(client_wrapper=self._client_wrapper)
-        self.api_token = AsyncApiTokenClient(client_wrapper=self._client_wrapper)
-        self.documents = AsyncDocumentsClient(client_wrapper=self._client_wrapper)
-        self.prompts = AsyncPromptsClient(client_wrapper=self._client_wrapper)
-        self.tools = AsyncToolsClient(client_wrapper=self._client_wrapper)
-        self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)
+        self.llm = AsyncLlmClient(client_wrapper=self._client_wrapper)
+        self.api_user = AsyncApiUserClient(client_wrapper=self._client_wrapper)
+        self.datasource = AsyncDatasourceClient(client_wrapper=self._client_wrapper)
+        self.tool = AsyncToolClient(client_wrapper=self._client_wrapper)
+        self.workflow = AsyncWorkflowClient(client_wrapper=self._client_wrapper)
