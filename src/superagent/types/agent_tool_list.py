@@ -6,11 +6,12 @@ import typing
 import pydantic
 
 from ..core.datetime_utils import serialize_datetime
+from .prisma_models_agent_tool import PrismaModelsAgentTool
 
 
 class AgentToolList(pydantic.BaseModel):
     success: bool
-    data: typing.Optional[typing.List[typing.Dict[str, typing.Any]]]
+    data: typing.Optional[typing.List[PrismaModelsAgentTool]]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
