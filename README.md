@@ -1,9 +1,8 @@
 <div align="center">
 
-# Superagent Python Library 🥷
+# Superagent Python SDK 🥷
 
-**Build, deploy, and manage LLM-powered agents**
-[superagent.sh](https://superagent.sh)
+### The agent framework for large language models
 
 <p>
 <img alt="PyPi" src="https://img.shields.io/pypi/v/fern-superagent.svg" />
@@ -18,6 +17,12 @@
 </p>
 
 </div>
+
+-----
+
+Superagent is an open source agent framework that enables any developer to integrate production ready AI Agents into any application in a matter of minutes.
+
+-----
 
 ## Installation
 
@@ -34,11 +39,16 @@ poetry add superagent-py
 ```python
 from superagent.client import Superagent
 
-client = Superagent(token="API_TOKEN", environment="https://api.superagent.sh")
+client = Superagent(token="API_TOKEN", base_url="https://api.beta.superagent.sh")
 
-agent = client.agents.get_agent("<AGENT_ID>")
+agent = client.agents.create(request={
+    "name": "My Agent",
+    "description": "My awesome agent",
+    "isActive": True
+    "llmModel": "GPT_4_0613"
+})
 
-print("Received response from superagent", agent)
+print("Received response from superagent", agent.data)
 ```
 
 ## Async Client
@@ -46,15 +56,14 @@ print("Received response from superagent", agent)
 ```python
 from superagent.client import AsyncSuperagent
 
-import asyncio
+agent = await client.agents.create(request={
+    "name": "My Agent",
+    "description": "My awesome agent",
+    "isActive": True
+    "llmModel": "GPT_4_0613"
+})
 
-client = AsyncSuperagent(token="API_TOKEN", environment="https://api.superagent.sh")
-
-async def get_agent() -> None:
-    agent = client.agents.get_agent("<AGENT_ID>")
-    print(token_response)
-
-asyncio.run(get_agent())
+print("Received response from superagent", agent.data)
 ```
 
 ## Handling Exceptions
