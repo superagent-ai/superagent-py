@@ -69,6 +69,7 @@ agent = await client.agents.create(request={
     "isActive": True,
     "llmModel": "GPT_4_0613"
 })
+
 output = await client.agent.invoke(
     agent_id=agent.data.id,
     input="Hi there!",
