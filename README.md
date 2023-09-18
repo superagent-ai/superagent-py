@@ -44,7 +44,7 @@ client = Superagent(token="API_TOKEN", base_url="https://api.beta.superagent.sh"
 agent = client.agents.create(request={
     "name": "My Agent",
     "description": "My awesome agent",
-    "isActive": True
+    "isActive": True,
     "llmModel": "GPT_4_0613"
 })
 
