@@ -48,6 +48,13 @@ agent = client.agents.create(request={
     "llmModel": "GPT_4_0613"
 })
 
+output = client.agent.invoke(
+    agent_id=agent.data.id,
+    input="Hi there!",
+    enable_streaming=Flase,
+    session_id="123"
+)
+
 print("Received response from superagent", agent.data)
 ```
 
@@ -62,6 +69,12 @@ agent = await client.agents.create(request={
     "isActive": True,
     "llmModel": "GPT_4_0613"
 })
+output = await client.agent.invoke(
+    agent_id=agent.data.id,
+    input="Hi there!",
+    enable_streaming=Flase,
+    session_id="123"
+)
 
 print("Received response from superagent", agent.data)
 ```
@@ -74,7 +87,7 @@ All exceptions thrown by the SDK will sublcass [moneykit.ApiError](./src/moneyki
 from superagent.core import ApiError
 
 try:
-  client.agents.get_agent("<AGENT_ID>")
+  client.agents.get(agent_id="12312")
 except APIError as e:
   # handle any api related error
 ```
