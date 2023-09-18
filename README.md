@@ -59,7 +59,7 @@ from superagent.client import AsyncSuperagent
 agent = await client.agents.create(request={
     "name": "My Agent",
     "description": "My awesome agent",
-    "isActive": True
+    "isActive": True,
     "llmModel": "GPT_4_0613"
 })
 
