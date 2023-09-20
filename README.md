@@ -2,7 +2,7 @@
 
 # Superagent Python SDK 🥷
 
-### The agent framework for large language models
+### The open framework for building AI Assistants
 
 <p>
 <img alt="PyPi" src="https://img.shields.io/pypi/v/fern-superagent.svg" />
@@ -20,7 +20,7 @@
 
 -----
 
-Superagent is an open source agent framework that enables any developer to integrate production ready AI Agents into any application in a matter of minutes.
+Superagent is an open source framework that enables any developer to integrate production ready AI Assistants into any application in a matter of minutes.
 
 -----
 
