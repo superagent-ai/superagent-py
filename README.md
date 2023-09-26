@@ -51,7 +51,7 @@ agent = client.agents.create(request={
 output = client.agent.invoke(
     agent_id=agent.data.id,
     input="Hi there!",
-    enable_streaming=Flase,
+    enable_streaming=False,
     session_id="123"
 )
 
@@ -73,7 +73,7 @@ agent = await client.agents.create(request={
 output = await client.agent.invoke(
     agent_id=agent.data.id,
     input="Hi there!",
-    enable_streaming=Flase,
+    enable_streaming=False,
     session_id="123"
 )
 
