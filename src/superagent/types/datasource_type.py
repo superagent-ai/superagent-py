@@ -14,6 +14,10 @@ class DatasourceType(str, enum.Enum):
     TXT = "TXT"
     PDF = "PDF"
     CSV = "CSV"
+    PPTX = "PPTX"
+    XLSX = "XLSX"
+    DOCX = "DOCX"
+    GOOGLE_DOC = "GOOGLE_DOC"
     YOUTUBE = "YOUTUBE"
     GITHUB_REPOSITORY = "GITHUB_REPOSITORY"
     MARKDOWN = "MARKDOWN"
@@ -30,6 +34,10 @@ class DatasourceType(str, enum.Enum):
         txt: typing.Callable[[], T_Result],
         pdf: typing.Callable[[], T_Result],
         csv: typing.Callable[[], T_Result],
+        pptx: typing.Callable[[], T_Result],
+        xlsx: typing.Callable[[], T_Result],
+        docx: typing.Callable[[], T_Result],
+        google_doc: typing.Callable[[], T_Result],
         youtube: typing.Callable[[], T_Result],
         github_repository: typing.Callable[[], T_Result],
         markdown: typing.Callable[[], T_Result],
@@ -47,6 +55,14 @@ class DatasourceType(str, enum.Enum):
             return pdf()
         if self is DatasourceType.CSV:
             return csv()
+        if self is DatasourceType.PPTX:
+            return pptx()
+        if self is DatasourceType.XLSX:
+            return xlsx()
+        if self is DatasourceType.DOCX:
+            return docx()
+        if self is DatasourceType.GOOGLE_DOC:
+            return google_doc()
         if self is DatasourceType.YOUTUBE:
             return youtube()
         if self is DatasourceType.GITHUB_REPOSITORY:

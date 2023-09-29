@@ -42,6 +42,7 @@ from .types import (
 )
 from .errors import UnprocessableEntityError
 from .resources import agent, api_user, datasource, llm, tool, workflow
+from .environment import SuperagentEnvironment
 
 __all__ = [
     "AgentDatasosurceList",
@@ -77,6 +78,7 @@ __all__ = [
     "PrismaModelsTool",
     "PrismaModelsWorkflow",
     "PrismaModelsWorkflowStep",
+    "SuperagentEnvironment",
     "ToolList",
     "ToolType",
     "UnprocessableEntityError",

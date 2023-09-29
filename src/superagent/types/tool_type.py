@@ -21,6 +21,7 @@ class ToolType(str, enum.Enum):
     CHATGPT_PLUGIN = "CHATGPT_PLUGIN"
     METAPHOR = "METAPHOR"
     PUBMED = "PUBMED"
+    CODE_EXECUTOR = "CODE_EXECUTOR"
 
     def visit(
         self,
@@ -34,6 +35,7 @@ class ToolType(str, enum.Enum):
         chatgpt_plugin: typing.Callable[[], T_Result],
         metaphor: typing.Callable[[], T_Result],
         pubmed: typing.Callable[[], T_Result],
+        code_executor: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is ToolType.BROWSER:
             return browser()
@@ -55,3 +57,5 @@ class ToolType(str, enum.Enum):
             return metaphor()
         if self is ToolType.PUBMED:
             return pubmed()
+        if self is ToolType.CODE_EXECUTOR:
+            return code_executor()
