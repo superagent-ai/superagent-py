@@ -24,7 +24,7 @@ class PrismaModelsApiUser(pydantic.BaseModel):
     llms: typing.Optional[typing.List[PrismaModelsLlm]]
     datasources: typing.Optional[typing.List[PrismaModelsDatasource]]
     tools: typing.Optional[typing.List[PrismaModelsTool]]
-    worflows: typing.Optional[typing.List[PrismaModelsWorkflow]]
+    workflows: typing.Optional[typing.List[PrismaModelsWorkflow]]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

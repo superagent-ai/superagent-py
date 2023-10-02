@@ -19,6 +19,7 @@ class PrismaModelsDatasource(pydantic.BaseModel):
 
     id: str
     name: str
+    content: typing.Optional[str]
     description: typing.Optional[str]
     url: typing.Optional[str]
     type: DatasourceType

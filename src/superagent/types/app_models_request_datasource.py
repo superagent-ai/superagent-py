@@ -12,6 +12,7 @@ class AppModelsRequestDatasource(pydantic.BaseModel):
     name: str
     description: str
     type: str
+    content: typing.Optional[str]
     url: typing.Optional[str]
     metadata: typing.Optional[typing.Dict[str, typing.Any]]
 
