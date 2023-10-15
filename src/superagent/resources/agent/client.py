@@ -142,7 +142,13 @@ class AgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def invoke(
-        self, agent_id: str, *, input: str, session_id: typing.Optional[str] = OMIT, enable_streaming: bool
+        self,
+        agent_id: str,
+        *,
+        input: str,
+        session_id: typing.Optional[str] = OMIT,
+        enable_streaming: bool,
+        output_schema: typing.Optional[str] = OMIT,
     ) -> AppModelsResponseAgentInvoke:
         """
         Invoke an agent
@@ -155,10 +161,14 @@ class AgentClient:
             - session_id: typing.Optional[str].
 
             - enable_streaming: bool.
+
+            - output_schema: typing.Optional[str].
         """
         _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
         if session_id is not OMIT:
             _request["sessionId"] = session_id
+        if output_schema is not OMIT:
+            _request["outputSchema"] = output_schema
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/invoke"),
@@ -522,7 +532,13 @@ class AsyncAgentClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def invoke(
-        self, agent_id: str, *, input: str, session_id: typing.Optional[str] = OMIT, enable_streaming: bool
+        self,
+        agent_id: str,
+        *,
+        input: str,
+        session_id: typing.Optional[str] = OMIT,
+        enable_streaming: bool,
+        output_schema: typing.Optional[str] = OMIT,
     ) -> AppModelsResponseAgentInvoke:
         """
         Invoke an agent
@@ -535,10 +551,14 @@ class AsyncAgentClient:
             - session_id: typing.Optional[str].
 
             - enable_streaming: bool.
+
+            - output_schema: typing.Optional[str].
         """
         _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
         if session_id is not OMIT:
             _request["sessionId"] = session_id
+        if output_schema is not OMIT:
+            _request["outputSchema"] = output_schema
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/invoke"),
