@@ -19,6 +19,7 @@ class PrismaModelsAgent(pydantic.BaseModel):
     id: str
     name: str
     avatar: typing.Optional[str]
+    initial_message: typing.Optional[str] = pydantic.Field(alias="initialMessage")
     description: str
     is_active: bool = pydantic.Field(alias="isActive")
     created_at: dt.datetime = pydantic.Field(alias="createdAt")

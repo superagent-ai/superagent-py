@@ -11,6 +11,7 @@ from ..core.datetime_utils import serialize_datetime
 class AppModelsRequestAgent(pydantic.BaseModel):
     is_active: typing.Optional[bool] = pydantic.Field(alias="isActive")
     name: str
+    initial_message: typing.Optional[str] = pydantic.Field(alias="initialMessage")
     prompt: typing.Optional[str]
     llm_model: str = pydantic.Field(alias="llmModel")
     description: str

@@ -10,7 +10,7 @@ from ..core.datetime_utils import serialize_datetime
 
 class AppModelsResponseAgentInvoke(pydantic.BaseModel):
     success: bool
-    data: typing.Dict[str, typing.Any]
+    data: typing.Optional[typing.Any]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
