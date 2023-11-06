@@ -3,10 +3,13 @@
 import datetime as dt
 import typing
 
-import pydantic
-
 from ..core.datetime_utils import serialize_datetime
 from .prisma_models_tool import PrismaModelsTool
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 
 class AppModelsResponseTool(pydantic.BaseModel):

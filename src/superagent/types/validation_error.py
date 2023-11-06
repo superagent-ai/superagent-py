@@ -3,10 +3,13 @@
 import datetime as dt
 import typing
 
-import pydantic
-
 from ..core.datetime_utils import serialize_datetime
 from .validation_error_loc_item import ValidationErrorLocItem
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 
 class ValidationError(pydantic.BaseModel):

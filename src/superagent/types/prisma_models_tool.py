@@ -5,10 +5,13 @@ from __future__ import annotations
 import datetime as dt
 import typing
 
-import pydantic
-
 from ..core.datetime_utils import serialize_datetime
 from .tool_type import ToolType
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 
 class PrismaModelsTool(pydantic.BaseModel):

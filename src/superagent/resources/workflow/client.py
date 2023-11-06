@@ -4,8 +4,6 @@ import typing
 import urllib.parse
 from json.decoder import JSONDecodeError
 
-import pydantic
-
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
@@ -14,6 +12,11 @@ from ...types.app_models_request_workflow import AppModelsRequestWorkflow
 from ...types.app_models_response_workflow import AppModelsResponseWorkflow
 from ...types.http_validation_error import HttpValidationError
 from ...types.workflow_list import WorkflowList
+
+try:
+    import pydantic.v1 as pydantic  # type: ignore
+except ImportError:
+    import pydantic  # type: ignore
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
