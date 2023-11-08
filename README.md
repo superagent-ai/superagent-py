@@ -41,11 +41,12 @@ from superagent.client import Superagent
 
 client = Superagent(token="API_TOKEN", base_url="https://api.beta.superagent.sh")
 
-agent = client.agents.create(request={
+agent = client.agent.create(request={
     "name": "My Agent",
     "description": "My awesome agent",
     "isActive": True,
-    "llmModel": "GPT_4_0613"
+    "llmModel": "GPT_4_1106_PREVIEW",
+    "prompt": "You are a helpful assistant"
 })
 
 output = client.agent.invoke(
@@ -63,11 +64,12 @@ print("Received response from superagent", agent.data)
 ```python
 from superagent.client import AsyncSuperagent
 
-agent = await client.agents.create(request={
+agent = await client.agent.create(request={
     "name": "My Agent",
     "description": "My awesome agent",
     "isActive": True,
-    "llmModel": "GPT_4_0613"
+    "llmModel": "GPT_4_1106_PREVIEW",
+    "prompt": "You are a helpful assistant"
 })
 
 output = await client.agent.invoke(
