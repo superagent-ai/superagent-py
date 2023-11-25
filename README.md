@@ -104,7 +104,7 @@ Error codes are as followed:
 
 ## Acknowledgements
 
-A special thanks to the [Fern](https://buildwithfern.com/) team for all support with the Superagent libraries and SDKS ❤️.
+A special thanks to the [Fern](https://buildwithfern.com/) team for all support with the Superagent libraries and SDKs ❤️.
 
 ## Beta status
 
