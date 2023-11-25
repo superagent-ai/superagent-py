@@ -6,8 +6,9 @@
 
 <p>
 <img alt="PyPi" src="https://img.shields.io/pypi/v/fern-superagent.svg" />
-<img alt="Fern" src="https://img.shields.io/badge/%F0%9F%8C%BF-SDK%20generated%20by%20Fern-brightgreen" />
-<img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/homanp/superagent-py" />
+<a href="https://buildwithfern.com/?utm_source=homanp/suepragent-py/readme">
+        <img alt="Fern" src="https://img.shields.io/badge/%F0%9F%8C%BF-SDK%20generated%20by%20Fern-brightgreen" />
+    </a><img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/homanp/superagent-py" />
 <img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/homanp/superagent-py" />
 <img alt="" src="https://img.shields.io/github/repo-size/homanp/superagent-py" />
 <img alt="GitHub Issues" src="https://img.shields.io/github/issues/homanp/superagent-py" />
@@ -103,7 +104,7 @@ Error codes are as followed:
 
 ## Acknowledgements
 
-A special thanks to the [Fern](https://buildwithfern.com/) team for all support with the Superagent libraries and SDKS ❤️.
+A special thanks to the [Fern](https://buildwithfern.com/) team for all support with the Superagent libraries and SDKs ❤️.
 
 ## Beta status
 
