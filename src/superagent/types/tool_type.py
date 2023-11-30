@@ -11,6 +11,7 @@ class ToolType(str, enum.Enum):
     An enumeration.
     """
 
+    ALGOLIA = "ALGOLIA"
     BROWSER = "BROWSER"
     BING_SEARCH = "BING_SEARCH"
     REPLICATE = "REPLICATE"
@@ -22,9 +23,15 @@ class ToolType(str, enum.Enum):
     METAPHOR = "METAPHOR"
     PUBMED = "PUBMED"
     CODE_EXECUTOR = "CODE_EXECUTOR"
+    OPENBB = "OPENBB"
+    GPT_VISION = "GPT_VISION"
+    TTS_1 = "TTS_1"
+    HAND_OFF = "HAND_OFF"
+    FUNCTION = "FUNCTION"
 
     def visit(
         self,
+        algolia: typing.Callable[[], T_Result],
         browser: typing.Callable[[], T_Result],
         bing_search: typing.Callable[[], T_Result],
         replicate: typing.Callable[[], T_Result],
@@ -36,7 +43,14 @@ class ToolType(str, enum.Enum):
         metaphor: typing.Callable[[], T_Result],
         pubmed: typing.Callable[[], T_Result],
         code_executor: typing.Callable[[], T_Result],
+        openbb: typing.Callable[[], T_Result],
+        gpt_vision: typing.Callable[[], T_Result],
+        tts_1: typing.Callable[[], T_Result],
+        hand_off: typing.Callable[[], T_Result],
+        function: typing.Callable[[], T_Result],
     ) -> T_Result:
+        if self is ToolType.ALGOLIA:
+            return algolia()
         if self is ToolType.BROWSER:
             return browser()
         if self is ToolType.BING_SEARCH:
@@ -59,3 +73,13 @@ class ToolType(str, enum.Enum):
             return pubmed()
         if self is ToolType.CODE_EXECUTOR:
             return code_executor()
+        if self is ToolType.OPENBB:
+            return openbb()
+        if self is ToolType.GPT_VISION:
+            return gpt_vision()
+        if self is ToolType.TTS_1:
+            return tts_1()
+        if self is ToolType.HAND_OFF:
+            return hand_off()
+        if self is ToolType.FUNCTION:
+            return function()
