@@ -10,6 +10,7 @@ from .types import (
     AppModelsRequestLlm,
     AppModelsRequestTool,
     AppModelsRequestWorkflow,
+    AppModelsRequestWorkflowStep,
     AppModelsResponseAgent,
     AppModelsResponseAgentInvoke,
     AppModelsResponseApiUser,
@@ -17,6 +18,7 @@ from .types import (
     AppModelsResponseLlm,
     AppModelsResponseTool,
     AppModelsResponseWorkflow,
+    AppModelsResponseWorkflowStep,
     DatasourceList,
     DatasourceStatus,
     DatasourceType,
@@ -39,6 +41,7 @@ from .types import (
     ValidationError,
     ValidationErrorLocItem,
     WorkflowList,
+    WorkflowStepList,
 )
 from .errors import UnprocessableEntityError
 from .resources import agent, api_user, datasource, llm, tool, workflow
@@ -54,6 +57,7 @@ __all__ = [
     "AppModelsRequestLlm",
     "AppModelsRequestTool",
     "AppModelsRequestWorkflow",
+    "AppModelsRequestWorkflowStep",
     "AppModelsResponseAgent",
     "AppModelsResponseAgentInvoke",
     "AppModelsResponseApiUser",
@@ -61,6 +65,7 @@ __all__ = [
     "AppModelsResponseLlm",
     "AppModelsResponseTool",
     "AppModelsResponseWorkflow",
+    "AppModelsResponseWorkflowStep",
     "DatasourceList",
     "DatasourceStatus",
     "DatasourceType",
@@ -85,6 +90,7 @@ __all__ = [
     "ValidationError",
     "ValidationErrorLocItem",
     "WorkflowList",
+    "WorkflowStepList",
     "agent",
     "api_user",
     "datasource",

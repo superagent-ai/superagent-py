@@ -7,6 +7,7 @@ from json.decoder import JSONDecodeError
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
+from ...core.remove_none_from_dict import remove_none_from_dict
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.agent_datasosurce_list import AgentDatasosurceList
 from ...types.agent_list import AgentList
@@ -30,18 +31,26 @@ class AgentClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list(self) -> AgentList:
+    def list(self, *, skip: typing.Optional[int] = None, limit: typing.Optional[int] = None) -> AgentList:
         """
         List all agents
+
+        Parameters:
+            - skip: typing.Optional[int].
+
+            - limit: typing.Optional[int].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
+            params=remove_none_from_dict({"skip": skip, "limit": limit}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AgentList, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -420,18 +429,26 @@ class AsyncAgentClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list(self) -> AgentList:
+    async def list(self, *, skip: typing.Optional[int] = None, limit: typing.Optional[int] = None) -> AgentList:
         """
         List all agents
+
+        Parameters:
+            - skip: typing.Optional[int].
+
+            - limit: typing.Optional[int].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
+            params=remove_none_from_dict({"skip": skip, "limit": limit}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AgentList, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

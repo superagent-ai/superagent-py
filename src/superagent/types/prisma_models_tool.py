@@ -30,6 +30,7 @@ class PrismaModelsTool(pydantic.BaseModel):
     api_user_id: str = pydantic.Field(alias="apiUserId")
     api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser")
     tools: typing.Optional[typing.List[PrismaModelsAgentTool]]
+    tool_config: typing.Optional[str] = pydantic.Field(alias="toolConfig")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
