@@ -28,6 +28,7 @@ class ToolType(str, enum.Enum):
     TTS_1 = "TTS_1"
     HAND_OFF = "HAND_OFF"
     FUNCTION = "FUNCTION"
+    HTTP = "HTTP"
 
     def visit(
         self,
@@ -48,6 +49,7 @@ class ToolType(str, enum.Enum):
         tts_1: typing.Callable[[], T_Result],
         hand_off: typing.Callable[[], T_Result],
         function: typing.Callable[[], T_Result],
+        http: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is ToolType.ALGOLIA:
             return algolia()
@@ -83,3 +85,5 @@ class ToolType(str, enum.Enum):
             return hand_off()
         if self is ToolType.FUNCTION:
             return function()
+        if self is ToolType.HTTP:
+            return http()

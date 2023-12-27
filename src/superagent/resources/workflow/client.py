@@ -30,19 +30,19 @@ class WorkflowClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list(self, *, skip: typing.Optional[int] = None, limit: typing.Optional[int] = None) -> WorkflowList:
+    def list(self, *, skip: typing.Optional[int] = None, take: typing.Optional[int] = None) -> WorkflowList:
         """
         List all workflows
 
         Parameters:
             - skip: typing.Optional[int].
 
-            - limit: typing.Optional[int].
+            - take: typing.Optional[int].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/workflows"),
-            params=remove_none_from_dict({"skip": skip, "limit": limit}),
+            params=remove_none_from_dict({"skip": skip, "take": take}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -274,19 +274,19 @@ class AsyncWorkflowClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list(self, *, skip: typing.Optional[int] = None, limit: typing.Optional[int] = None) -> WorkflowList:
+    async def list(self, *, skip: typing.Optional[int] = None, take: typing.Optional[int] = None) -> WorkflowList:
         """
         List all workflows
 
         Parameters:
             - skip: typing.Optional[int].
 
-            - limit: typing.Optional[int].
+            - take: typing.Optional[int].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/workflows"),
-            params=remove_none_from_dict({"skip": skip, "limit": limit}),
+            params=remove_none_from_dict({"skip": skip, "take": take}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )

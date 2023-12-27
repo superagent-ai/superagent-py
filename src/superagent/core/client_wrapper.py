@@ -14,7 +14,7 @@ class BaseClientWrapper:
         headers: typing.Dict[str, str] = {
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "superagent-py",
-            "X-Fern-SDK-Version": "v0.1.48",
+            "X-Fern-SDK-Version": "v0.1.49",
         }
         token = self._get_token()
         if token is not None:
