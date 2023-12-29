@@ -7,6 +7,7 @@ from json.decoder import JSONDecodeError
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
+from ...core.remove_none_from_dict import remove_none_from_dict
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.app_models_request_datasource import AppModelsRequestDatasource
 from ...types.app_models_response_datasource import AppModelsResponseDatasource
@@ -26,18 +27,26 @@ class DatasourceClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list(self) -> DatasourceList:
+    def list(self, *, skip: typing.Optional[int] = None, take: typing.Optional[int] = None) -> DatasourceList:
         """
         List all datasources
+
+        Parameters:
+            - skip: typing.Optional[int].
+
+            - take: typing.Optional[int].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/datasources"),
+            params=remove_none_from_dict({"skip": skip, "take": take}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(DatasourceList, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:
@@ -145,18 +154,26 @@ class AsyncDatasourceClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list(self) -> DatasourceList:
+    async def list(self, *, skip: typing.Optional[int] = None, take: typing.Optional[int] = None) -> DatasourceList:
         """
         List all datasources
+
+        Parameters:
+            - skip: typing.Optional[int].
+
+            - take: typing.Optional[int].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/datasources"),
+            params=remove_none_from_dict({"skip": skip, "take": take}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(DatasourceList, _response.json())  # type: ignore
+        if _response.status_code == 422:
+            raise UnprocessableEntityError(pydantic.parse_obj_as(HttpValidationError, _response.json()))  # type: ignore
         try:
             _response_json = _response.json()
         except JSONDecodeError:

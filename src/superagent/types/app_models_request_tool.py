@@ -16,7 +16,7 @@ class AppModelsRequestTool(pydantic.BaseModel):
     description: str
     type: str
     metadata: typing.Optional[typing.Dict[str, typing.Any]]
-    return_direct: typing.Optional[bool] = pydantic.Field(alias="returnDirect")
+    return_direct: bool = pydantic.Field(alias="returnDirect")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

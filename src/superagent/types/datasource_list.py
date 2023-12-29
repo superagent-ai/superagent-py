@@ -15,6 +15,7 @@ except ImportError:
 class DatasourceList(pydantic.BaseModel):
     success: bool
     data: typing.Optional[typing.List[PrismaModelsDatasource]]
+    total_pages: int
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
