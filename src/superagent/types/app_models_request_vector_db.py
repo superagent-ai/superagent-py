@@ -11,14 +11,9 @@ except ImportError:
     import pydantic  # type: ignore
 
 
-class AppModelsRequestDatasource(pydantic.BaseModel):
-    name: str
-    description: str
-    type: str
-    content: typing.Optional[str]
-    url: typing.Optional[str]
-    metadata: typing.Optional[typing.Dict[str, typing.Any]]
-    vector_db_provider: typing.Optional[str] = pydantic.Field(alias="vectorDbProvider")
+class AppModelsRequestVectorDb(pydantic.BaseModel):
+    provider: str
+    options: typing.Dict[str, typing.Any]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -31,5 +26,4 @@ class AppModelsRequestDatasource(pydantic.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
         json_encoders = {dt.datetime: serialize_datetime}

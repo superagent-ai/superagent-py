@@ -33,6 +33,8 @@ class PrismaModelsDatasource(pydantic.BaseModel):
     metadata: typing.Optional[str]
     status: DatasourceStatus
     datasources: typing.Optional[typing.List[PrismaModelsAgentDatasource]]
+    vector_db: typing.Optional[PrismaModelsVectorDb] = pydantic.Field(alias="vectorDb")
+    vector_db_id: typing.Optional[str] = pydantic.Field(alias="vectorDbId")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -51,5 +53,6 @@ class PrismaModelsDatasource(pydantic.BaseModel):
 
 from .prisma_models_agent_datasource import PrismaModelsAgentDatasource  # noqa: E402
 from .prisma_models_api_user import PrismaModelsApiUser  # noqa: E402
+from .prisma_models_vector_db import PrismaModelsVectorDb  # noqa: E402
 
 PrismaModelsDatasource.update_forward_refs()

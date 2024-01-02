@@ -9,6 +9,7 @@ from .types import (
     AppModelsRequestDatasource,
     AppModelsRequestLlm,
     AppModelsRequestTool,
+    AppModelsRequestVectorDb,
     AppModelsRequestWorkflow,
     AppModelsRequestWorkflowStep,
     AppModelsResponseAgent,
@@ -17,6 +18,7 @@ from .types import (
     AppModelsResponseDatasource,
     AppModelsResponseLlm,
     AppModelsResponseTool,
+    AppModelsResponseVectorDb,
     AppModelsResponseWorkflow,
     AppModelsResponseWorkflowStep,
     DatasourceList,
@@ -34,17 +36,20 @@ from .types import (
     PrismaModelsDatasource,
     PrismaModelsLlm,
     PrismaModelsTool,
+    PrismaModelsVectorDb,
     PrismaModelsWorkflow,
     PrismaModelsWorkflowStep,
     ToolList,
     ToolType,
     ValidationError,
     ValidationErrorLocItem,
+    VectorDbList,
+    VectorDbProvider,
     WorkflowList,
     WorkflowStepList,
 )
 from .errors import UnprocessableEntityError
-from .resources import agent, api_user, datasource, llm, tool, workflow
+from .resources import agent, api_user, datasource, llm, tool, vector_database, workflow
 from .environment import SuperagentEnvironment
 
 __all__ = [
@@ -56,6 +61,7 @@ __all__ = [
     "AppModelsRequestDatasource",
     "AppModelsRequestLlm",
     "AppModelsRequestTool",
+    "AppModelsRequestVectorDb",
     "AppModelsRequestWorkflow",
     "AppModelsRequestWorkflowStep",
     "AppModelsResponseAgent",
@@ -64,6 +70,7 @@ __all__ = [
     "AppModelsResponseDatasource",
     "AppModelsResponseLlm",
     "AppModelsResponseTool",
+    "AppModelsResponseVectorDb",
     "AppModelsResponseWorkflow",
     "AppModelsResponseWorkflowStep",
     "DatasourceList",
@@ -81,6 +88,7 @@ __all__ = [
     "PrismaModelsDatasource",
     "PrismaModelsLlm",
     "PrismaModelsTool",
+    "PrismaModelsVectorDb",
     "PrismaModelsWorkflow",
     "PrismaModelsWorkflowStep",
     "SuperagentEnvironment",
@@ -89,6 +97,8 @@ __all__ = [
     "UnprocessableEntityError",
     "ValidationError",
     "ValidationErrorLocItem",
+    "VectorDbList",
+    "VectorDbProvider",
     "WorkflowList",
     "WorkflowStepList",
     "agent",
@@ -96,5 +106,6 @@ __all__ = [
     "datasource",
     "llm",
     "tool",
+    "vector_database",
     "workflow",
 ]

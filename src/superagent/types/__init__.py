@@ -8,6 +8,7 @@ from .app_models_request_agent import AppModelsRequestAgent
 from .app_models_request_datasource import AppModelsRequestDatasource
 from .app_models_request_llm import AppModelsRequestLlm
 from .app_models_request_tool import AppModelsRequestTool
+from .app_models_request_vector_db import AppModelsRequestVectorDb
 from .app_models_request_workflow import AppModelsRequestWorkflow
 from .app_models_request_workflow_step import AppModelsRequestWorkflowStep
 from .app_models_response_agent import AppModelsResponseAgent
@@ -16,6 +17,7 @@ from .app_models_response_api_user import AppModelsResponseApiUser
 from .app_models_response_datasource import AppModelsResponseDatasource
 from .app_models_response_llm import AppModelsResponseLlm
 from .app_models_response_tool import AppModelsResponseTool
+from .app_models_response_vector_db import AppModelsResponseVectorDb
 from .app_models_response_workflow import AppModelsResponseWorkflow
 from .app_models_response_workflow_step import AppModelsResponseWorkflowStep
 from .datasource_list import DatasourceList
@@ -33,12 +35,15 @@ from .prisma_models_api_user import PrismaModelsApiUser
 from .prisma_models_datasource import PrismaModelsDatasource
 from .prisma_models_llm import PrismaModelsLlm
 from .prisma_models_tool import PrismaModelsTool
+from .prisma_models_vector_db import PrismaModelsVectorDb
 from .prisma_models_workflow import PrismaModelsWorkflow
 from .prisma_models_workflow_step import PrismaModelsWorkflowStep
 from .tool_list import ToolList
 from .tool_type import ToolType
 from .validation_error import ValidationError
 from .validation_error_loc_item import ValidationErrorLocItem
+from .vector_db_list import VectorDbList
+from .vector_db_provider import VectorDbProvider
 from .workflow_list import WorkflowList
 from .workflow_step_list import WorkflowStepList
 
@@ -51,6 +56,7 @@ __all__ = [
     "AppModelsRequestDatasource",
     "AppModelsRequestLlm",
     "AppModelsRequestTool",
+    "AppModelsRequestVectorDb",
     "AppModelsRequestWorkflow",
     "AppModelsRequestWorkflowStep",
     "AppModelsResponseAgent",
@@ -59,6 +65,7 @@ __all__ = [
     "AppModelsResponseDatasource",
     "AppModelsResponseLlm",
     "AppModelsResponseTool",
+    "AppModelsResponseVectorDb",
     "AppModelsResponseWorkflow",
     "AppModelsResponseWorkflowStep",
     "DatasourceList",
@@ -76,12 +83,15 @@ __all__ = [
     "PrismaModelsDatasource",
     "PrismaModelsLlm",
     "PrismaModelsTool",
+    "PrismaModelsVectorDb",
     "PrismaModelsWorkflow",
     "PrismaModelsWorkflowStep",
     "ToolList",
     "ToolType",
     "ValidationError",
     "ValidationErrorLocItem",
+    "VectorDbList",
+    "VectorDbProvider",
     "WorkflowList",
     "WorkflowStepList",
 ]

@@ -11,6 +11,7 @@ from .resources.api_user.client import ApiUserClient, AsyncApiUserClient
 from .resources.datasource.client import AsyncDatasourceClient, DatasourceClient
 from .resources.llm.client import AsyncLlmClient, LlmClient
 from .resources.tool.client import AsyncToolClient, ToolClient
+from .resources.vector_database.client import AsyncVectorDatabaseClient, VectorDatabaseClient
 from .resources.workflow.client import AsyncWorkflowClient, WorkflowClient
 
 
@@ -35,6 +36,7 @@ class Superagent:
         self.datasource = DatasourceClient(client_wrapper=self._client_wrapper)
         self.tool = ToolClient(client_wrapper=self._client_wrapper)
         self.workflow = WorkflowClient(client_wrapper=self._client_wrapper)
+        self.vector_database = VectorDatabaseClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncSuperagent:
@@ -58,6 +60,7 @@ class AsyncSuperagent:
         self.datasource = AsyncDatasourceClient(client_wrapper=self._client_wrapper)
         self.tool = AsyncToolClient(client_wrapper=self._client_wrapper)
         self.workflow = AsyncWorkflowClient(client_wrapper=self._client_wrapper)
+        self.vector_database = AsyncVectorDatabaseClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(*, base_url: typing.Optional[str] = None, environment: SuperagentEnvironment) -> str:

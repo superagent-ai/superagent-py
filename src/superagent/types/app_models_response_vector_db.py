@@ -4,6 +4,7 @@ import datetime as dt
 import typing
 
 from ..core.datetime_utils import serialize_datetime
+from .prisma_models_vector_db import PrismaModelsVectorDb
 
 try:
     import pydantic.v1 as pydantic  # type: ignore
@@ -11,14 +12,9 @@ except ImportError:
     import pydantic  # type: ignore
 
 
-class AppModelsRequestDatasource(pydantic.BaseModel):
-    name: str
-    description: str
-    type: str
-    content: typing.Optional[str]
-    url: typing.Optional[str]
-    metadata: typing.Optional[typing.Dict[str, typing.Any]]
-    vector_db_provider: typing.Optional[str] = pydantic.Field(alias="vectorDbProvider")
+class AppModelsResponseVectorDb(pydantic.BaseModel):
+    success: bool
+    data: typing.Optional[PrismaModelsVectorDb]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -31,5 +27,4 @@ class AppModelsRequestDatasource(pydantic.BaseModel):
     class Config:
         frozen = True
         smart_union = True
-        allow_population_by_field_name = True
         json_encoders = {dt.datetime: serialize_datetime}
