@@ -4,6 +4,7 @@ import datetime as dt
 import typing
 
 from ..core.datetime_utils import serialize_datetime
+from .vector_db_provider import VectorDbProvider
 
 try:
     import pydantic.v1 as pydantic  # type: ignore
@@ -12,7 +13,7 @@ except ImportError:
 
 
 class AppModelsRequestVectorDb(pydantic.BaseModel):
-    provider: str
+    provider: VectorDbProvider
     options: typing.Dict[str, typing.Any]
 
     def json(self, **kwargs: typing.Any) -> str:

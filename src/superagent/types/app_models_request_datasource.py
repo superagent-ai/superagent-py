@@ -18,7 +18,7 @@ class AppModelsRequestDatasource(pydantic.BaseModel):
     content: typing.Optional[str]
     url: typing.Optional[str]
     metadata: typing.Optional[typing.Dict[str, typing.Any]]
-    vector_db_provider: typing.Optional[str] = pydantic.Field(alias="vectorDbProvider")
+    vector_db_id: typing.Optional[str] = pydantic.Field(alias="vectorDbId")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
