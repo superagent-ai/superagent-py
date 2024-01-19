@@ -15,6 +15,7 @@ class VectorDbProvider(str, enum.Enum):
     ASTRA_DB = "ASTRA_DB"
     WEAVIATE = "WEAVIATE"
     QDRANT = "QDRANT"
+    SUPABASE = "SUPABASE"
 
     def visit(
         self,
@@ -22,6 +23,7 @@ class VectorDbProvider(str, enum.Enum):
         astra_db: typing.Callable[[], T_Result],
         weaviate: typing.Callable[[], T_Result],
         qdrant: typing.Callable[[], T_Result],
+        supabase: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is VectorDbProvider.PINECONE:
             return pinecone()
@@ -31,3 +33,5 @@ class VectorDbProvider(str, enum.Enum):
             return weaviate()
         if self is VectorDbProvider.QDRANT:
             return qdrant()
+        if self is VectorDbProvider.SUPABASE:
+            return supabase()

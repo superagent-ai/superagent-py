@@ -49,7 +49,7 @@ from .types import (
     WorkflowStepList,
 )
 from .errors import UnprocessableEntityError
-from .resources import agent, api_user, datasource, llm, tool, vector_database, workflow
+from .resources import agent, api_user, datasource, llm, telemetry, tool, vector_database, workflow
 from .environment import SuperagentEnvironment
 
 __all__ = [
@@ -105,6 +105,7 @@ __all__ = [
     "api_user",
     "datasource",
     "llm",
+    "telemetry",
     "tool",
     "vector_database",
     "workflow",
