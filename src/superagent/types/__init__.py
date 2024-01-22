@@ -26,6 +26,7 @@ from .datasource_type import DatasourceType
 from .http_validation_error import HttpValidationError
 from .llm_list import LlmList
 from .llm_model import LlmModel
+from .llm_params import LlmParams
 from .llm_provider import LlmProvider
 from .prisma_models_agent import PrismaModelsAgent
 from .prisma_models_agent_datasource import PrismaModelsAgentDatasource
@@ -74,6 +75,7 @@ __all__ = [
     "HttpValidationError",
     "LlmList",
     "LlmModel",
+    "LlmParams",
     "LlmProvider",
     "PrismaModelsAgent",
     "PrismaModelsAgentDatasource",

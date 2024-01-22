@@ -16,6 +16,7 @@ from ...types.app_models_request_agent import AppModelsRequestAgent
 from ...types.app_models_response_agent import AppModelsResponseAgent
 from ...types.app_models_response_agent_invoke import AppModelsResponseAgentInvoke
 from ...types.http_validation_error import HttpValidationError
+from ...types.llm_params import LlmParams
 
 try:
     import pydantic.v1 as pydantic  # type: ignore
@@ -160,6 +161,7 @@ class AgentClient:
         session_id: typing.Optional[str] = OMIT,
         enable_streaming: bool,
         output_schema: typing.Optional[str] = OMIT,
+        llm_params: typing.Optional[LlmParams] = OMIT,
     ) -> AppModelsResponseAgentInvoke:
         """
         Invoke an agent
@@ -174,12 +176,16 @@ class AgentClient:
             - enable_streaming: bool.
 
             - output_schema: typing.Optional[str].
+
+            - llm_params: typing.Optional[LlmParams].
         """
         _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
         if session_id is not OMIT:
             _request["sessionId"] = session_id
         if output_schema is not OMIT:
             _request["outputSchema"] = output_schema
+        if llm_params is not OMIT:
+            _request["llm_params"] = llm_params
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/invoke"),
@@ -535,6 +541,7 @@ class AsyncAgentClient:
         session_id: typing.Optional[str] = OMIT,
         enable_streaming: bool,
         output_schema: typing.Optional[str] = OMIT,
+        llm_params: typing.Optional[LlmParams] = OMIT,
     ) -> AppModelsResponseAgentInvoke:
         """
         Invoke an agent
@@ -549,12 +556,16 @@ class AsyncAgentClient:
             - enable_streaming: bool.
 
             - output_schema: typing.Optional[str].
+
+            - llm_params: typing.Optional[LlmParams].
         """
         _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
         if session_id is not OMIT:
             _request["sessionId"] = session_id
         if output_schema is not OMIT:
             _request["outputSchema"] = output_schema
+        if llm_params is not OMIT:
+            _request["llm_params"] = llm_params
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/invoke"),
