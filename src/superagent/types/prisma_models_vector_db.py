@@ -21,7 +21,7 @@ class PrismaModelsVectorDb(pydantic.BaseModel):
 
     id: str
     provider: VectorDbProvider
-    options: typing.Optional[str]
+    options: typing.Optional[typing.Any]
     datasources: typing.Optional[typing.List[PrismaModelsDatasource]]
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")

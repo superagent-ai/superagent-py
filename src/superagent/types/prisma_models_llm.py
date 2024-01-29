@@ -22,7 +22,7 @@ class PrismaModelsLlm(pydantic.BaseModel):
     id: str
     provider: LlmProvider
     api_key: str = pydantic.Field(alias="apiKey")
-    options: typing.Optional[str]
+    options: typing.Optional[typing.Any]
     agents: typing.Optional[typing.List[PrismaModelsAgentLlm]]
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")

@@ -4,6 +4,7 @@ import datetime as dt
 import typing
 
 from ..core.datetime_utils import serialize_datetime
+from .llm_provider import LlmProvider
 
 try:
     import pydantic.v1 as pydantic  # type: ignore
@@ -16,7 +17,8 @@ class AppModelsRequestAgent(pydantic.BaseModel):
     name: str
     initial_message: typing.Optional[str] = pydantic.Field(alias="initialMessage")
     prompt: typing.Optional[str]
-    llm_model: str = pydantic.Field(alias="llmModel")
+    llm_model: typing.Optional[str] = pydantic.Field(alias="llmModel")
+    llm_provider: typing.Optional[LlmProvider] = pydantic.Field(alias="llmProvider")
     description: str
     avatar: typing.Optional[str]
 
