@@ -4,7 +4,6 @@ from .agent_datasosurce_list import AgentDatasosurceList
 from .agent_list import AgentList
 from .agent_run_list import AgentRunList
 from .agent_tool_list import AgentToolList
-from .app_models_request_agent import AppModelsRequestAgent
 from .app_models_request_datasource import AppModelsRequestDatasource
 from .app_models_request_llm import AppModelsRequestLlm
 from .app_models_request_tool import AppModelsRequestTool
@@ -45,6 +44,7 @@ from .validation_error import ValidationError
 from .validation_error_loc_item import ValidationErrorLocItem
 from .vector_db_list import VectorDbList
 from .vector_db_provider import VectorDbProvider
+from .workflow_config import WorkflowConfig
 from .workflow_list import WorkflowList
 from .workflow_step_list import WorkflowStepList
 
@@ -53,7 +53,6 @@ __all__ = [
     "AgentList",
     "AgentRunList",
     "AgentToolList",
-    "AppModelsRequestAgent",
     "AppModelsRequestDatasource",
     "AppModelsRequestLlm",
     "AppModelsRequestTool",
@@ -94,6 +93,7 @@ __all__ = [
     "ValidationErrorLocItem",
     "VectorDbList",
     "VectorDbProvider",
+    "WorkflowConfig",
     "WorkflowList",
     "WorkflowStepList",
 ]

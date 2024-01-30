@@ -14,6 +14,7 @@ from .resources.telemetry.client import AsyncTelemetryClient, TelemetryClient
 from .resources.tool.client import AsyncToolClient, ToolClient
 from .resources.vector_database.client import AsyncVectorDatabaseClient, VectorDatabaseClient
 from .resources.workflow.client import AsyncWorkflowClient, WorkflowClient
+from .resources.workflow_config.client import AsyncWorkflowConfigClient, WorkflowConfigClient
 
 
 class Superagent:
@@ -37,6 +38,7 @@ class Superagent:
         self.datasource = DatasourceClient(client_wrapper=self._client_wrapper)
         self.tool = ToolClient(client_wrapper=self._client_wrapper)
         self.workflow = WorkflowClient(client_wrapper=self._client_wrapper)
+        self.workflow_config = WorkflowConfigClient(client_wrapper=self._client_wrapper)
         self.vector_database = VectorDatabaseClient(client_wrapper=self._client_wrapper)
         self.telemetry = TelemetryClient(client_wrapper=self._client_wrapper)
 
@@ -62,6 +64,7 @@ class AsyncSuperagent:
         self.datasource = AsyncDatasourceClient(client_wrapper=self._client_wrapper)
         self.tool = AsyncToolClient(client_wrapper=self._client_wrapper)
         self.workflow = AsyncWorkflowClient(client_wrapper=self._client_wrapper)
+        self.workflow_config = AsyncWorkflowConfigClient(client_wrapper=self._client_wrapper)
         self.vector_database = AsyncVectorDatabaseClient(client_wrapper=self._client_wrapper)
         self.telemetry = AsyncTelemetryClient(client_wrapper=self._client_wrapper)
 

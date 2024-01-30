@@ -29,6 +29,7 @@ class PrismaModelsApiUser(pydantic.BaseModel):
     tools: typing.Optional[typing.List[PrismaModelsTool]]
     workflows: typing.Optional[typing.List[PrismaModelsWorkflow]]
     vector_db: typing.Optional[typing.List[PrismaModelsVectorDb]] = pydantic.Field(alias="vectorDb")
+    workflow_configs: typing.Optional[typing.List[WorkflowConfig]] = pydantic.Field(alias="workflowConfigs")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -51,5 +52,6 @@ from .prisma_models_llm import PrismaModelsLlm  # noqa: E402
 from .prisma_models_tool import PrismaModelsTool  # noqa: E402
 from .prisma_models_vector_db import PrismaModelsVectorDb  # noqa: E402
 from .prisma_models_workflow import PrismaModelsWorkflow  # noqa: E402
+from .workflow_config import WorkflowConfig  # noqa: E402
 
 PrismaModelsApiUser.update_forward_refs()

@@ -12,11 +12,11 @@ from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.agent_datasosurce_list import AgentDatasosurceList
 from ...types.agent_list import AgentList
 from ...types.agent_tool_list import AgentToolList
-from ...types.app_models_request_agent import AppModelsRequestAgent
 from ...types.app_models_response_agent import AppModelsResponseAgent
 from ...types.app_models_response_agent_invoke import AppModelsResponseAgentInvoke
 from ...types.http_validation_error import HttpValidationError
 from ...types.llm_params import LlmParams
+from ...types.llm_provider import LlmProvider
 
 try:
     import pydantic.v1 as pydantic  # type: ignore
@@ -57,17 +57,57 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, *, request: AppModelsRequestAgent) -> AppModelsResponseAgent:
+    def create(
+        self,
+        *,
+        is_active: typing.Optional[bool] = OMIT,
+        name: str,
+        initial_message: typing.Optional[str] = OMIT,
+        prompt: typing.Optional[str] = OMIT,
+        llm_model: typing.Optional[str] = OMIT,
+        llm_provider: typing.Optional[LlmProvider] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        avatar: typing.Optional[str] = OMIT,
+    ) -> AppModelsResponseAgent:
         """
         Create a new agent
 
         Parameters:
-            - request: AppModelsRequestAgent.
+            - is_active: typing.Optional[bool].
+
+            - name: str.
+
+            - initial_message: typing.Optional[str].
+
+            - prompt: typing.Optional[str].
+
+            - llm_model: typing.Optional[str].
+
+            - llm_provider: typing.Optional[LlmProvider].
+
+            - description: typing.Optional[str].
+
+            - avatar: typing.Optional[str].
         """
+        _request: typing.Dict[str, typing.Any] = {"name": name}
+        if is_active is not OMIT:
+            _request["isActive"] = is_active
+        if initial_message is not OMIT:
+            _request["initialMessage"] = initial_message
+        if prompt is not OMIT:
+            _request["prompt"] = prompt
+        if llm_model is not OMIT:
+            _request["llmModel"] = llm_model
+        if llm_provider is not OMIT:
+            _request["llmProvider"] = llm_provider.value
+        if description is not OMIT:
+            _request["description"] = description
+        if avatar is not OMIT:
+            _request["avatar"] = avatar
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
-            json=jsonable_encoder(request),
+            json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -127,19 +167,57 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, agent_id: str, *, request: AppModelsRequestAgent) -> AppModelsResponseAgent:
+    def update(
+        self,
+        agent_id: str,
+        *,
+        is_active: typing.Optional[bool] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        initial_message: typing.Optional[str] = OMIT,
+        prompt: typing.Optional[str] = OMIT,
+        llm_model: typing.Optional[str] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        avatar: typing.Optional[str] = OMIT,
+    ) -> AppModelsResponseAgent:
         """
         Patch an agent
 
         Parameters:
             - agent_id: str.
 
-            - request: AppModelsRequestAgent.
+            - is_active: typing.Optional[bool].
+
+            - name: typing.Optional[str].
+
+            - initial_message: typing.Optional[str].
+
+            - prompt: typing.Optional[str].
+
+            - llm_model: typing.Optional[str].
+
+            - description: typing.Optional[str].
+
+            - avatar: typing.Optional[str].
         """
+        _request: typing.Dict[str, typing.Any] = {}
+        if is_active is not OMIT:
+            _request["isActive"] = is_active
+        if name is not OMIT:
+            _request["name"] = name
+        if initial_message is not OMIT:
+            _request["initialMessage"] = initial_message
+        if prompt is not OMIT:
+            _request["prompt"] = prompt
+        if llm_model is not OMIT:
+            _request["llmModel"] = llm_model
+        if description is not OMIT:
+            _request["description"] = description
+        if avatar is not OMIT:
+            _request["avatar"] = avatar
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
-            json=jsonable_encoder(request),
+            json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -437,17 +515,57 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, *, request: AppModelsRequestAgent) -> AppModelsResponseAgent:
+    async def create(
+        self,
+        *,
+        is_active: typing.Optional[bool] = OMIT,
+        name: str,
+        initial_message: typing.Optional[str] = OMIT,
+        prompt: typing.Optional[str] = OMIT,
+        llm_model: typing.Optional[str] = OMIT,
+        llm_provider: typing.Optional[LlmProvider] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        avatar: typing.Optional[str] = OMIT,
+    ) -> AppModelsResponseAgent:
         """
         Create a new agent
 
         Parameters:
-            - request: AppModelsRequestAgent.
+            - is_active: typing.Optional[bool].
+
+            - name: str.
+
+            - initial_message: typing.Optional[str].
+
+            - prompt: typing.Optional[str].
+
+            - llm_model: typing.Optional[str].
+
+            - llm_provider: typing.Optional[LlmProvider].
+
+            - description: typing.Optional[str].
+
+            - avatar: typing.Optional[str].
         """
+        _request: typing.Dict[str, typing.Any] = {"name": name}
+        if is_active is not OMIT:
+            _request["isActive"] = is_active
+        if initial_message is not OMIT:
+            _request["initialMessage"] = initial_message
+        if prompt is not OMIT:
+            _request["prompt"] = prompt
+        if llm_model is not OMIT:
+            _request["llmModel"] = llm_model
+        if llm_provider is not OMIT:
+            _request["llmProvider"] = llm_provider.value
+        if description is not OMIT:
+            _request["description"] = description
+        if avatar is not OMIT:
+            _request["avatar"] = avatar
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
-            json=jsonable_encoder(request),
+            json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -507,19 +625,57 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, agent_id: str, *, request: AppModelsRequestAgent) -> AppModelsResponseAgent:
+    async def update(
+        self,
+        agent_id: str,
+        *,
+        is_active: typing.Optional[bool] = OMIT,
+        name: typing.Optional[str] = OMIT,
+        initial_message: typing.Optional[str] = OMIT,
+        prompt: typing.Optional[str] = OMIT,
+        llm_model: typing.Optional[str] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        avatar: typing.Optional[str] = OMIT,
+    ) -> AppModelsResponseAgent:
         """
         Patch an agent
 
         Parameters:
             - agent_id: str.
 
-            - request: AppModelsRequestAgent.
+            - is_active: typing.Optional[bool].
+
+            - name: typing.Optional[str].
+
+            - initial_message: typing.Optional[str].
+
+            - prompt: typing.Optional[str].
+
+            - llm_model: typing.Optional[str].
+
+            - description: typing.Optional[str].
+
+            - avatar: typing.Optional[str].
         """
+        _request: typing.Dict[str, typing.Any] = {}
+        if is_active is not OMIT:
+            _request["isActive"] = is_active
+        if name is not OMIT:
+            _request["name"] = name
+        if initial_message is not OMIT:
+            _request["initialMessage"] = initial_message
+        if prompt is not OMIT:
+            _request["prompt"] = prompt
+        if llm_model is not OMIT:
+            _request["llmModel"] = llm_model
+        if description is not OMIT:
+            _request["description"] = description
+        if avatar is not OMIT:
+            _request["avatar"] = avatar
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
-            json=jsonable_encoder(request),
+            json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )

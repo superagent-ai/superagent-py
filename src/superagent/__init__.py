@@ -5,7 +5,6 @@ from .types import (
     AgentList,
     AgentRunList,
     AgentToolList,
-    AppModelsRequestAgent,
     AppModelsRequestDatasource,
     AppModelsRequestLlm,
     AppModelsRequestTool,
@@ -46,11 +45,12 @@ from .types import (
     ValidationErrorLocItem,
     VectorDbList,
     VectorDbProvider,
+    WorkflowConfig,
     WorkflowList,
     WorkflowStepList,
 )
 from .errors import UnprocessableEntityError
-from .resources import agent, api_user, datasource, llm, telemetry, tool, vector_database, workflow
+from .resources import agent, api_user, datasource, llm, telemetry, tool, vector_database, workflow, workflow_config
 from .environment import SuperagentEnvironment
 
 __all__ = [
@@ -58,7 +58,6 @@ __all__ = [
     "AgentList",
     "AgentRunList",
     "AgentToolList",
-    "AppModelsRequestAgent",
     "AppModelsRequestDatasource",
     "AppModelsRequestLlm",
     "AppModelsRequestTool",
@@ -101,6 +100,7 @@ __all__ = [
     "ValidationErrorLocItem",
     "VectorDbList",
     "VectorDbProvider",
+    "WorkflowConfig",
     "WorkflowList",
     "WorkflowStepList",
     "agent",
@@ -111,4 +111,5 @@ __all__ = [
     "tool",
     "vector_database",
     "workflow",
+    "workflow_config",
 ]

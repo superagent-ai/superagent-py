@@ -26,6 +26,7 @@ class PrismaModelsWorkflow(pydantic.BaseModel):
     steps: typing.Optional[typing.List[PrismaModelsWorkflowStep]]
     api_user_id: str = pydantic.Field(alias="apiUserId")
     api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser")
+    workflow_configs: typing.Optional[typing.List[WorkflowConfig]] = pydantic.Field(alias="workflowConfigs")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
@@ -44,5 +45,6 @@ class PrismaModelsWorkflow(pydantic.BaseModel):
 
 from .prisma_models_api_user import PrismaModelsApiUser  # noqa: E402
 from .prisma_models_workflow_step import PrismaModelsWorkflowStep  # noqa: E402
+from .workflow_config import WorkflowConfig  # noqa: E402
 
 PrismaModelsWorkflow.update_forward_refs()
