@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "superagent-py"
-version = "v0.1.69"
+version = "v0.1.70"
 description = ""
 readme = "README.md"
 authors = []
