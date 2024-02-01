@@ -14,6 +14,7 @@ class LlmModel(str, enum.Enum):
     GPT_3_5_TURBO_16_K_0613 = "GPT_3_5_TURBO_16K_0613"
     GPT_3_5_TURBO_0613 = "GPT_3_5_TURBO_0613"
     GPT_3_5_TURBO_1106 = "GPT_3_5_TURBO_1106"
+    GPT_3_5_TURBO_0125 = "GPT_3_5_TURBO_0125"
     GPT_4_0613 = "GPT_4_0613"
     GPT_4_32_K_0613 = "GPT_4_32K_0613"
     GPT_4_1106_PREVIEW = "GPT_4_1106_PREVIEW"
@@ -26,6 +27,7 @@ class LlmModel(str, enum.Enum):
         gpt_3_5_turbo_16_k_0613: typing.Callable[[], T_Result],
         gpt_3_5_turbo_0613: typing.Callable[[], T_Result],
         gpt_3_5_turbo_1106: typing.Callable[[], T_Result],
+        gpt_3_5_turbo_0125: typing.Callable[[], T_Result],
         gpt_4_0613: typing.Callable[[], T_Result],
         gpt_4_32_k_0613: typing.Callable[[], T_Result],
         gpt_4_1106_preview: typing.Callable[[], T_Result],
@@ -39,6 +41,8 @@ class LlmModel(str, enum.Enum):
             return gpt_3_5_turbo_0613()
         if self is LlmModel.GPT_3_5_TURBO_1106:
             return gpt_3_5_turbo_1106()
+        if self is LlmModel.GPT_3_5_TURBO_0125:
+            return gpt_3_5_turbo_0125()
         if self is LlmModel.GPT_4_0613:
             return gpt_4_0613()
         if self is LlmModel.GPT_4_32_K_0613:
