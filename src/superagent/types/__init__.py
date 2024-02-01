@@ -4,6 +4,7 @@ from .agent_datasosurce_list import AgentDatasosurceList
 from .agent_list import AgentList
 from .agent_run_list import AgentRunList
 from .agent_tool_list import AgentToolList
+from .agent_type import AgentType
 from .app_models_request_datasource import AppModelsRequestDatasource
 from .app_models_request_llm import AppModelsRequestLlm
 from .app_models_request_tool import AppModelsRequestTool
@@ -53,6 +54,7 @@ __all__ = [
     "AgentList",
     "AgentRunList",
     "AgentToolList",
+    "AgentType",
     "AppModelsRequestDatasource",
     "AppModelsRequestLlm",
     "AppModelsRequestTool",

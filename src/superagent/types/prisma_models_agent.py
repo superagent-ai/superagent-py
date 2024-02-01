@@ -6,6 +6,7 @@ import datetime as dt
 import typing
 
 from ..core.datetime_utils import serialize_datetime
+from .agent_type import AgentType
 from .llm_model import LlmModel
 
 try:
@@ -20,6 +21,7 @@ class PrismaModelsAgent(pydantic.BaseModel):
     """
 
     id: str
+    type: AgentType
     name: str
     avatar: typing.Optional[str]
     initial_message: typing.Optional[str] = pydantic.Field(alias="initialMessage")
