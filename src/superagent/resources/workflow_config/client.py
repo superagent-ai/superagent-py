@@ -19,7 +19,7 @@ class WorkflowConfigClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def parse_yaml(self, workflow_id: str) -> typing.Any:
+    def add_config(self, workflow_id: str) -> typing.Any:
         """
         Parameters:
             - workflow_id: str.
@@ -45,7 +45,7 @@ class AsyncWorkflowConfigClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def parse_yaml(self, workflow_id: str) -> typing.Any:
+    async def add_config(self, workflow_id: str) -> typing.Any:
         """
         Parameters:
             - workflow_id: str.

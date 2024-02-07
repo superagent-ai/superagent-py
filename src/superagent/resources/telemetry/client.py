@@ -21,17 +21,41 @@ class TelemetryClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list_runs(self, *, agent_id: typing.Optional[str] = None) -> AgentRunList:
+    def list_runs(
+        self,
+        *,
+        agent_id: typing.Optional[str] = None,
+        from_page: typing.Optional[int] = None,
+        to_page: typing.Optional[int] = None,
+        limit: typing.Optional[int] = None,
+        workflow_id: typing.Optional[str] = None,
+    ) -> AgentRunList:
         """
         List runs
 
         Parameters:
             - agent_id: typing.Optional[str].
+
+            - from_page: typing.Optional[int].
+
+            - to_page: typing.Optional[int].
+
+            - limit: typing.Optional[int].
+
+            - workflow_id: typing.Optional[str].
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/runs"),
-            params=remove_none_from_dict({"agent_id": agent_id}),
+            params=remove_none_from_dict(
+                {
+                    "agent_id": agent_id,
+                    "from_page": from_page,
+                    "to_page": to_page,
+                    "limit": limit,
+                    "workflow_id": workflow_id,
+                }
+            ),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -50,17 +74,41 @@ class AsyncTelemetryClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list_runs(self, *, agent_id: typing.Optional[str] = None) -> AgentRunList:
+    async def list_runs(
+        self,
+        *,
+        agent_id: typing.Optional[str] = None,
+        from_page: typing.Optional[int] = None,
+        to_page: typing.Optional[int] = None,
+        limit: typing.Optional[int] = None,
+        workflow_id: typing.Optional[str] = None,
+    ) -> AgentRunList:
         """
         List runs
 
         Parameters:
             - agent_id: typing.Optional[str].
+
+            - from_page: typing.Optional[int].
+
+            - to_page: typing.Optional[int].
+
+            - limit: typing.Optional[int].
+
+            - workflow_id: typing.Optional[str].
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/runs"),
-            params=remove_none_from_dict({"agent_id": agent_id}),
+            params=remove_none_from_dict(
+                {
+                    "agent_id": agent_id,
+                    "from_page": from_page,
+                    "to_page": to_page,
+                    "limit": limit,
+                    "workflow_id": workflow_id,
+                }
+            ),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )

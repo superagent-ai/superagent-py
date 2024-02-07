@@ -5,6 +5,7 @@ from .agent_list import AgentList
 from .agent_run_list import AgentRunList
 from .agent_tool_list import AgentToolList
 from .agent_type import AgentType
+from .app_models_request_api_user import AppModelsRequestApiUser
 from .app_models_request_datasource import AppModelsRequestDatasource
 from .app_models_request_llm import AppModelsRequestLlm
 from .app_models_request_tool import AppModelsRequestTool
@@ -23,11 +24,19 @@ from .app_models_response_workflow_step import AppModelsResponseWorkflowStep
 from .datasource_list import DatasourceList
 from .datasource_status import DatasourceStatus
 from .datasource_type import DatasourceType
+from .function_definition import FunctionDefinition
 from .http_validation_error import HttpValidationError
 from .llm_list import LlmList
 from .llm_model import LlmModel
 from .llm_params import LlmParams
 from .llm_provider import LlmProvider
+from .open_ai_assistant_parameters import OpenAiAssistantParameters
+from .open_ai_assistant_parameters_tools_item import (
+    OpenAiAssistantParametersToolsItem,
+    OpenAiAssistantParametersToolsItem_CodeInterpreter,
+    OpenAiAssistantParametersToolsItem_Function,
+    OpenAiAssistantParametersToolsItem_Retrieval,
+)
 from .prisma_models_agent import PrismaModelsAgent
 from .prisma_models_agent_datasource import PrismaModelsAgentDatasource
 from .prisma_models_agent_llm import PrismaModelsAgentLlm
@@ -39,6 +48,9 @@ from .prisma_models_tool import PrismaModelsTool
 from .prisma_models_vector_db import PrismaModelsVectorDb
 from .prisma_models_workflow import PrismaModelsWorkflow
 from .prisma_models_workflow_step import PrismaModelsWorkflowStep
+from .tool_assistant_tools_code import ToolAssistantToolsCode
+from .tool_assistant_tools_function import ToolAssistantToolsFunction
+from .tool_assistant_tools_retrieval import ToolAssistantToolsRetrieval
 from .tool_list import ToolList
 from .tool_type import ToolType
 from .validation_error import ValidationError
@@ -55,6 +67,7 @@ __all__ = [
     "AgentRunList",
     "AgentToolList",
     "AgentType",
+    "AppModelsRequestApiUser",
     "AppModelsRequestDatasource",
     "AppModelsRequestLlm",
     "AppModelsRequestTool",
@@ -73,11 +86,17 @@ __all__ = [
     "DatasourceList",
     "DatasourceStatus",
     "DatasourceType",
+    "FunctionDefinition",
     "HttpValidationError",
     "LlmList",
     "LlmModel",
     "LlmParams",
     "LlmProvider",
+    "OpenAiAssistantParameters",
+    "OpenAiAssistantParametersToolsItem",
+    "OpenAiAssistantParametersToolsItem_CodeInterpreter",
+    "OpenAiAssistantParametersToolsItem_Function",
+    "OpenAiAssistantParametersToolsItem_Retrieval",
     "PrismaModelsAgent",
     "PrismaModelsAgentDatasource",
     "PrismaModelsAgentLlm",
@@ -89,6 +108,9 @@ __all__ = [
     "PrismaModelsVectorDb",
     "PrismaModelsWorkflow",
     "PrismaModelsWorkflowStep",
+    "ToolAssistantToolsCode",
+    "ToolAssistantToolsFunction",
+    "ToolAssistantToolsRetrieval",
     "ToolList",
     "ToolType",
     "ValidationError",

@@ -12,11 +12,13 @@ from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.agent_datasosurce_list import AgentDatasosurceList
 from ...types.agent_list import AgentList
 from ...types.agent_tool_list import AgentToolList
+from ...types.agent_type import AgentType
 from ...types.app_models_response_agent import AppModelsResponseAgent
 from ...types.app_models_response_agent_invoke import AppModelsResponseAgentInvoke
 from ...types.http_validation_error import HttpValidationError
 from ...types.llm_params import LlmParams
 from ...types.llm_provider import LlmProvider
+from ...types.open_ai_assistant_parameters import OpenAiAssistantParameters
 
 try:
     import pydantic.v1 as pydantic  # type: ignore
@@ -62,14 +64,14 @@ class AgentClient:
         *,
         is_active: typing.Optional[bool] = OMIT,
         name: str,
-        type: typing.Optional[str] = OMIT,
         initial_message: typing.Optional[str] = OMIT,
         prompt: typing.Optional[str] = OMIT,
         llm_model: typing.Optional[str] = OMIT,
         llm_provider: typing.Optional[LlmProvider] = OMIT,
         description: typing.Optional[str] = OMIT,
         avatar: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        type: typing.Optional[AgentType] = OMIT,
+        parameters: typing.Optional[OpenAiAssistantParameters] = OMIT,
     ) -> AppModelsResponseAgent:
         """
         Create a new agent
@@ -78,8 +80,6 @@ class AgentClient:
             - is_active: typing.Optional[bool].
 
             - name: str.
-
-            - type: typing.Optional[str].
 
             - initial_message: typing.Optional[str].
 
@@ -93,13 +93,13 @@ class AgentClient:
 
             - avatar: typing.Optional[str].
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+            - type: typing.Optional[AgentType].
+
+            - parameters: typing.Optional[OpenAiAssistantParameters].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name}
         if is_active is not OMIT:
             _request["isActive"] = is_active
-        if type is not OMIT:
-            _request["type"] = type
         if initial_message is not OMIT:
             _request["initialMessage"] = initial_message
         if prompt is not OMIT:
@@ -112,8 +112,10 @@ class AgentClient:
             _request["description"] = description
         if avatar is not OMIT:
             _request["avatar"] = avatar
-        if metadata is not OMIT:
-            _request["metadata"] = metadata
+        if type is not OMIT:
+            _request["type"] = type.value
+        if parameters is not OMIT:
+            _request["parameters"] = parameters
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
@@ -540,14 +542,14 @@ class AsyncAgentClient:
         *,
         is_active: typing.Optional[bool] = OMIT,
         name: str,
-        type: typing.Optional[str] = OMIT,
         initial_message: typing.Optional[str] = OMIT,
         prompt: typing.Optional[str] = OMIT,
         llm_model: typing.Optional[str] = OMIT,
         llm_provider: typing.Optional[LlmProvider] = OMIT,
         description: typing.Optional[str] = OMIT,
         avatar: typing.Optional[str] = OMIT,
-        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        type: typing.Optional[AgentType] = OMIT,
+        parameters: typing.Optional[OpenAiAssistantParameters] = OMIT,
     ) -> AppModelsResponseAgent:
         """
         Create a new agent
@@ -556,8 +558,6 @@ class AsyncAgentClient:
             - is_active: typing.Optional[bool].
 
             - name: str.
-
-            - type: typing.Optional[str].
 
             - initial_message: typing.Optional[str].
 
@@ -571,13 +571,13 @@ class AsyncAgentClient:
 
             - avatar: typing.Optional[str].
 
-            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+            - type: typing.Optional[AgentType].
+
+            - parameters: typing.Optional[OpenAiAssistantParameters].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name}
         if is_active is not OMIT:
             _request["isActive"] = is_active
-        if type is not OMIT:
-            _request["type"] = type
         if initial_message is not OMIT:
             _request["initialMessage"] = initial_message
         if prompt is not OMIT:
@@ -590,8 +590,10 @@ class AsyncAgentClient:
             _request["description"] = description
         if avatar is not OMIT:
             _request["avatar"] = avatar
-        if metadata is not OMIT:
-            _request["metadata"] = metadata
+        if type is not OMIT:
+            _request["type"] = type.value
+        if parameters is not OMIT:
+            _request["parameters"] = parameters
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
