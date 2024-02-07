@@ -69,7 +69,7 @@ class AgentClient:
         llm_provider: typing.Optional[LlmProvider] = OMIT,
         description: typing.Optional[str] = OMIT,
         avatar: typing.Optional[str] = OMIT,
-        openai_options: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> AppModelsResponseAgent:
         """
         Create a new agent
@@ -93,7 +93,7 @@ class AgentClient:
 
             - avatar: typing.Optional[str].
 
-            - openai_options: typing.Optional[typing.Dict[str, typing.Any]].
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name}
         if is_active is not OMIT:
@@ -112,8 +112,8 @@ class AgentClient:
             _request["description"] = description
         if avatar is not OMIT:
             _request["avatar"] = avatar
-        if openai_options is not OMIT:
-            _request["openaiOptions"] = openai_options
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
@@ -189,7 +189,7 @@ class AgentClient:
         description: typing.Optional[str] = OMIT,
         avatar: typing.Optional[str] = OMIT,
         type: typing.Optional[str] = OMIT,
-        openai_options: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> AppModelsResponseAgent:
         """
         Patch an agent
@@ -213,7 +213,7 @@ class AgentClient:
 
             - type: typing.Optional[str].
 
-            - openai_options: typing.Optional[typing.Dict[str, typing.Any]].
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
         """
         _request: typing.Dict[str, typing.Any] = {}
         if is_active is not OMIT:
@@ -232,8 +232,8 @@ class AgentClient:
             _request["avatar"] = avatar
         if type is not OMIT:
             _request["type"] = type
-        if openai_options is not OMIT:
-            _request["openaiOptions"] = openai_options
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
@@ -547,7 +547,7 @@ class AsyncAgentClient:
         llm_provider: typing.Optional[LlmProvider] = OMIT,
         description: typing.Optional[str] = OMIT,
         avatar: typing.Optional[str] = OMIT,
-        openai_options: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> AppModelsResponseAgent:
         """
         Create a new agent
@@ -571,7 +571,7 @@ class AsyncAgentClient:
 
             - avatar: typing.Optional[str].
 
-            - openai_options: typing.Optional[typing.Dict[str, typing.Any]].
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name}
         if is_active is not OMIT:
@@ -590,8 +590,8 @@ class AsyncAgentClient:
             _request["description"] = description
         if avatar is not OMIT:
             _request["avatar"] = avatar
-        if openai_options is not OMIT:
-            _request["openaiOptions"] = openai_options
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
@@ -667,7 +667,7 @@ class AsyncAgentClient:
         description: typing.Optional[str] = OMIT,
         avatar: typing.Optional[str] = OMIT,
         type: typing.Optional[str] = OMIT,
-        openai_options: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> AppModelsResponseAgent:
         """
         Patch an agent
@@ -691,7 +691,7 @@ class AsyncAgentClient:
 
             - type: typing.Optional[str].
 
-            - openai_options: typing.Optional[typing.Dict[str, typing.Any]].
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
         """
         _request: typing.Dict[str, typing.Any] = {}
         if is_active is not OMIT:
@@ -710,8 +710,8 @@ class AsyncAgentClient:
             _request["avatar"] = avatar
         if type is not OMIT:
             _request["type"] = type
-        if openai_options is not OMIT:
-            _request["openaiOptions"] = openai_options
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),

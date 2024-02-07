@@ -37,7 +37,7 @@ class PrismaModelsAgent(pydantic.BaseModel):
     datasources: typing.Optional[typing.List[PrismaModelsAgentDatasource]]
     tools: typing.Optional[typing.List[PrismaModelsAgentTool]]
     workflow_steps: typing.Optional[typing.List[PrismaModelsWorkflowStep]] = pydantic.Field(alias="workflowSteps")
-    openai_metadata: typing.Optional[typing.Any] = pydantic.Field(alias="openaiMetadata")
+    metadata: typing.Optional[typing.Any]
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
