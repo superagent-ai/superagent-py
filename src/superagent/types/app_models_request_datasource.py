@@ -13,7 +13,7 @@ except ImportError:
 
 class AppModelsRequestDatasource(pydantic.BaseModel):
     name: str
-    description: str
+    description: typing.Optional[str]
     type: str
     content: typing.Optional[str]
     url: typing.Optional[str]

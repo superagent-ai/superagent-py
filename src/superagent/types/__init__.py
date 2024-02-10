@@ -8,7 +8,6 @@ from .agent_type import AgentType
 from .app_models_request_api_user import AppModelsRequestApiUser
 from .app_models_request_datasource import AppModelsRequestDatasource
 from .app_models_request_llm import AppModelsRequestLlm
-from .app_models_request_tool import AppModelsRequestTool
 from .app_models_request_vector_db import AppModelsRequestVectorDb
 from .app_models_request_workflow import AppModelsRequestWorkflow
 from .app_models_request_workflow_step import AppModelsRequestWorkflowStep
@@ -70,7 +69,6 @@ __all__ = [
     "AppModelsRequestApiUser",
     "AppModelsRequestDatasource",
     "AppModelsRequestLlm",
-    "AppModelsRequestTool",
     "AppModelsRequestVectorDb",
     "AppModelsRequestWorkflow",
     "AppModelsRequestWorkflowStep",

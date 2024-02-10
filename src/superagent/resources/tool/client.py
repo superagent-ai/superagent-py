@@ -9,7 +9,6 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_dict import remove_none_from_dict
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
-from ...types.app_models_request_tool import AppModelsRequestTool
 from ...types.app_models_response_tool import AppModelsResponseTool
 from ...types.http_validation_error import HttpValidationError
 from ...types.tool_list import ToolList
@@ -53,17 +52,40 @@ class ToolClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, *, request: AppModelsRequestTool) -> AppModelsResponseTool:
+    def create(
+        self,
+        *,
+        name: str,
+        description: typing.Optional[str] = OMIT,
+        type: str,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        return_direct: typing.Optional[bool] = OMIT,
+    ) -> AppModelsResponseTool:
         """
         Create a new tool
 
         Parameters:
-            - request: AppModelsRequestTool.
+            - name: str.
+
+            - description: typing.Optional[str].
+
+            - type: str.
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - return_direct: typing.Optional[bool].
         """
+        _request: typing.Dict[str, typing.Any] = {"name": name, "type": type}
+        if description is not OMIT:
+            _request["description"] = description
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        if return_direct is not OMIT:
+            _request["returnDirect"] = return_direct
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/tools"),
-            json=jsonable_encoder(request),
+            json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -123,19 +145,47 @@ class ToolClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update(self, tool_id: str, *, request: AppModelsRequestTool) -> AppModelsResponseTool:
+    def update(
+        self,
+        tool_id: str,
+        *,
+        name: typing.Optional[str] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        type: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        return_direct: typing.Optional[bool] = OMIT,
+    ) -> AppModelsResponseTool:
         """
         Update a specific tool
 
         Parameters:
             - tool_id: str.
 
-            - request: AppModelsRequestTool.
+            - name: typing.Optional[str].
+
+            - description: typing.Optional[str].
+
+            - type: typing.Optional[str].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - return_direct: typing.Optional[bool].
         """
+        _request: typing.Dict[str, typing.Any] = {}
+        if name is not OMIT:
+            _request["name"] = name
+        if description is not OMIT:
+            _request["description"] = description
+        if type is not OMIT:
+            _request["type"] = type
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        if return_direct is not OMIT:
+            _request["returnDirect"] = return_direct
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/tools/{tool_id}"),
-            json=jsonable_encoder(request),
+            json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -180,17 +230,40 @@ class AsyncToolClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, *, request: AppModelsRequestTool) -> AppModelsResponseTool:
+    async def create(
+        self,
+        *,
+        name: str,
+        description: typing.Optional[str] = OMIT,
+        type: str,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        return_direct: typing.Optional[bool] = OMIT,
+    ) -> AppModelsResponseTool:
         """
         Create a new tool
 
         Parameters:
-            - request: AppModelsRequestTool.
+            - name: str.
+
+            - description: typing.Optional[str].
+
+            - type: str.
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - return_direct: typing.Optional[bool].
         """
+        _request: typing.Dict[str, typing.Any] = {"name": name, "type": type}
+        if description is not OMIT:
+            _request["description"] = description
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        if return_direct is not OMIT:
+            _request["returnDirect"] = return_direct
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/tools"),
-            json=jsonable_encoder(request),
+            json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -250,19 +323,47 @@ class AsyncToolClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def update(self, tool_id: str, *, request: AppModelsRequestTool) -> AppModelsResponseTool:
+    async def update(
+        self,
+        tool_id: str,
+        *,
+        name: typing.Optional[str] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        type: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        return_direct: typing.Optional[bool] = OMIT,
+    ) -> AppModelsResponseTool:
         """
         Update a specific tool
 
         Parameters:
             - tool_id: str.
 
-            - request: AppModelsRequestTool.
+            - name: typing.Optional[str].
+
+            - description: typing.Optional[str].
+
+            - type: typing.Optional[str].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - return_direct: typing.Optional[bool].
         """
+        _request: typing.Dict[str, typing.Any] = {}
+        if name is not OMIT:
+            _request["name"] = name
+        if description is not OMIT:
+            _request["description"] = description
+        if type is not OMIT:
+            _request["type"] = type
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
+        if return_direct is not OMIT:
+            _request["returnDirect"] = return_direct
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/tools/{tool_id}"),
-            json=jsonable_encoder(request),
+            json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
