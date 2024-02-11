@@ -24,7 +24,7 @@ class PrismaModelsTool(pydantic.BaseModel):
     description: str
     type: ToolType
     return_direct: bool = pydantic.Field(alias="returnDirect")
-    metadata: str
+    metadata: typing.Optional[str]
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
     api_user_id: str = pydantic.Field(alias="apiUserId")
