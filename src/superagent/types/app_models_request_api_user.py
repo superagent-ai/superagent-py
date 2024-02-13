@@ -16,6 +16,7 @@ class AppModelsRequestApiUser(pydantic.BaseModel):
     first_name: typing.Optional[str] = pydantic.Field(alias="firstName")
     last_name: typing.Optional[str] = pydantic.Field(alias="lastName")
     company: typing.Optional[str]
+    anonymous_id: typing.Optional[str] = pydantic.Field(alias="anonymousId")
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
