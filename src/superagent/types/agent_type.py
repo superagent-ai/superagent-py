@@ -13,11 +13,17 @@ class AgentType(str, enum.Enum):
 
     SUPERAGENT = "SUPERAGENT"
     OPENAI_ASSISTANT = "OPENAI_ASSISTANT"
+    LLM = "LLM"
 
     def visit(
-        self, superagent: typing.Callable[[], T_Result], openai_assistant: typing.Callable[[], T_Result]
+        self,
+        superagent: typing.Callable[[], T_Result],
+        openai_assistant: typing.Callable[[], T_Result],
+        llm: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is AgentType.SUPERAGENT:
             return superagent()
         if self is AgentType.OPENAI_ASSISTANT:
             return openai_assistant()
+        if self is AgentType.LLM:
+            return llm()

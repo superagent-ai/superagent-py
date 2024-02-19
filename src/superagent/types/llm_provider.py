@@ -14,12 +14,16 @@ class LlmProvider(str, enum.Enum):
     OPENAI = "OPENAI"
     AZURE_OPENAI = "AZURE_OPENAI"
     HUGGINGFACE = "HUGGINGFACE"
+    PERPLEXITY = "PERPLEXITY"
+    TOGETHER_AI = "TOGETHER_AI"
 
     def visit(
         self,
         openai: typing.Callable[[], T_Result],
         azure_openai: typing.Callable[[], T_Result],
         huggingface: typing.Callable[[], T_Result],
+        perplexity: typing.Callable[[], T_Result],
+        together_ai: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is LlmProvider.OPENAI:
             return openai()
@@ -27,3 +31,7 @@ class LlmProvider(str, enum.Enum):
             return azure_openai()
         if self is LlmProvider.HUGGINGFACE:
             return huggingface()
+        if self is LlmProvider.PERPLEXITY:
+            return perplexity()
+        if self is LlmProvider.TOGETHER_AI:
+            return together_ai()

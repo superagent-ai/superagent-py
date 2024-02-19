@@ -29,6 +29,7 @@ class ToolType(str, enum.Enum):
     HAND_OFF = "HAND_OFF"
     FUNCTION = "FUNCTION"
     HTTP = "HTTP"
+    SUPERRAG = "SUPERRAG"
 
     def visit(
         self,
@@ -50,6 +51,7 @@ class ToolType(str, enum.Enum):
         hand_off: typing.Callable[[], T_Result],
         function: typing.Callable[[], T_Result],
         http: typing.Callable[[], T_Result],
+        superrag: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is ToolType.ALGOLIA:
             return algolia()
@@ -87,3 +89,5 @@ class ToolType(str, enum.Enum):
             return function()
         if self is ToolType.HTTP:
             return http()
+        if self is ToolType.SUPERRAG:
+            return superrag()

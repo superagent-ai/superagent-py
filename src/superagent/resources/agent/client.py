@@ -72,6 +72,7 @@ class AgentClient:
         avatar: typing.Optional[str] = OMIT,
         type: typing.Optional[AgentType] = OMIT,
         parameters: typing.Optional[OpenAiAssistantParameters] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> AppModelsResponseAgent:
         """
         Create a new agent
@@ -96,6 +97,8 @@ class AgentClient:
             - type: typing.Optional[AgentType].
 
             - parameters: typing.Optional[OpenAiAssistantParameters].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name}
         if is_active is not OMIT:
@@ -116,6 +119,8 @@ class AgentClient:
             _request["type"] = type.value
         if parameters is not OMIT:
             _request["parameters"] = parameters
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
@@ -550,6 +555,7 @@ class AsyncAgentClient:
         avatar: typing.Optional[str] = OMIT,
         type: typing.Optional[AgentType] = OMIT,
         parameters: typing.Optional[OpenAiAssistantParameters] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
     ) -> AppModelsResponseAgent:
         """
         Create a new agent
@@ -574,6 +580,8 @@ class AsyncAgentClient:
             - type: typing.Optional[AgentType].
 
             - parameters: typing.Optional[OpenAiAssistantParameters].
+
+            - metadata: typing.Optional[typing.Dict[str, typing.Any]].
         """
         _request: typing.Dict[str, typing.Any] = {"name": name}
         if is_active is not OMIT:
@@ -594,6 +602,8 @@ class AsyncAgentClient:
             _request["type"] = type.value
         if parameters is not OMIT:
             _request["parameters"] = parameters
+        if metadata is not OMIT:
+            _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
