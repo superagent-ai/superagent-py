@@ -7,6 +7,7 @@ import httpx
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import SuperagentEnvironment
 from .resources.agent.client import AgentClient, AsyncAgentClient
+from .resources.api_key.client import ApiKeyClient, AsyncApiKeyClient
 from .resources.api_user.client import ApiUserClient, AsyncApiUserClient
 from .resources.datasource.client import AsyncDatasourceClient, DatasourceClient
 from .resources.llm.client import AsyncLlmClient, LlmClient
@@ -34,6 +35,7 @@ class Superagent:
         self.agent = AgentClient(client_wrapper=self._client_wrapper)
         self.llm = LlmClient(client_wrapper=self._client_wrapper)
         self.api_user = ApiUserClient(client_wrapper=self._client_wrapper)
+        self.api_key = ApiKeyClient(client_wrapper=self._client_wrapper)
         self.datasource = DatasourceClient(client_wrapper=self._client_wrapper)
         self.tool = ToolClient(client_wrapper=self._client_wrapper)
         self.workflow = WorkflowClient(client_wrapper=self._client_wrapper)
@@ -59,6 +61,7 @@ class AsyncSuperagent:
         self.agent = AsyncAgentClient(client_wrapper=self._client_wrapper)
         self.llm = AsyncLlmClient(client_wrapper=self._client_wrapper)
         self.api_user = AsyncApiUserClient(client_wrapper=self._client_wrapper)
+        self.api_key = AsyncApiKeyClient(client_wrapper=self._client_wrapper)
         self.datasource = AsyncDatasourceClient(client_wrapper=self._client_wrapper)
         self.tool = AsyncToolClient(client_wrapper=self._client_wrapper)
         self.workflow = AsyncWorkflowClient(client_wrapper=self._client_wrapper)

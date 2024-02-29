@@ -5,6 +5,10 @@ from .types import (
     AgentList,
     AgentToolList,
     AgentType,
+    ApiKeyCreate,
+    ApiKeyCreateModel,
+    ApiKeyList,
+    AppModelsRequestApiKey,
     AppModelsRequestApiUser,
     AppModelsRequestDatasource,
     AppModelsRequestLlm,
@@ -13,6 +17,7 @@ from .types import (
     AppModelsRequestWorkflowStep,
     AppModelsResponseAgent,
     AppModelsResponseAgentInvoke,
+    AppModelsResponseApiKey,
     AppModelsResponseApiUser,
     AppModelsResponseDatasource,
     AppModelsResponseLlm,
@@ -38,6 +43,7 @@ from .types import (
     PrismaModelsAgentDatasource,
     PrismaModelsAgentLlm,
     PrismaModelsAgentTool,
+    PrismaModelsApiKey,
     PrismaModelsApiUser,
     PrismaModelsDatasource,
     PrismaModelsLlm,
@@ -59,7 +65,7 @@ from .types import (
     WorkflowStepList,
 )
 from .errors import UnprocessableEntityError
-from .resources import agent, api_user, datasource, llm, tool, vector_database, workflow, workflow_config
+from .resources import agent, api_key, api_user, datasource, llm, tool, vector_database, workflow, workflow_config
 from .environment import SuperagentEnvironment
 
 __all__ = [
@@ -67,6 +73,10 @@ __all__ = [
     "AgentList",
     "AgentToolList",
     "AgentType",
+    "ApiKeyCreate",
+    "ApiKeyCreateModel",
+    "ApiKeyList",
+    "AppModelsRequestApiKey",
     "AppModelsRequestApiUser",
     "AppModelsRequestDatasource",
     "AppModelsRequestLlm",
@@ -75,6 +85,7 @@ __all__ = [
     "AppModelsRequestWorkflowStep",
     "AppModelsResponseAgent",
     "AppModelsResponseAgentInvoke",
+    "AppModelsResponseApiKey",
     "AppModelsResponseApiUser",
     "AppModelsResponseDatasource",
     "AppModelsResponseLlm",
@@ -100,6 +111,7 @@ __all__ = [
     "PrismaModelsAgentDatasource",
     "PrismaModelsAgentLlm",
     "PrismaModelsAgentTool",
+    "PrismaModelsApiKey",
     "PrismaModelsApiUser",
     "PrismaModelsDatasource",
     "PrismaModelsLlm",
@@ -122,6 +134,7 @@ __all__ = [
     "WorkflowList",
     "WorkflowStepList",
     "agent",
+    "api_key",
     "api_user",
     "datasource",
     "llm",
