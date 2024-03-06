@@ -16,6 +16,7 @@ class LlmProvider(str, enum.Enum):
     HUGGINGFACE = "HUGGINGFACE"
     PERPLEXITY = "PERPLEXITY"
     TOGETHER_AI = "TOGETHER_AI"
+    ANTHROPIC = "ANTHROPIC"
 
     def visit(
         self,
@@ -24,6 +25,7 @@ class LlmProvider(str, enum.Enum):
         huggingface: typing.Callable[[], T_Result],
         perplexity: typing.Callable[[], T_Result],
         together_ai: typing.Callable[[], T_Result],
+        anthropic: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is LlmProvider.OPENAI:
             return openai()
@@ -35,3 +37,5 @@ class LlmProvider(str, enum.Enum):
             return perplexity()
         if self is LlmProvider.TOGETHER_AI:
             return together_ai()
+        if self is LlmProvider.ANTHROPIC:
+            return anthropic()
