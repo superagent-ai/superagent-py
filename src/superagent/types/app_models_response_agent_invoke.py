@@ -13,7 +13,7 @@ except ImportError:
 
 class AppModelsResponseAgentInvoke(pydantic.BaseModel):
     success: bool
-    data: typing.Optional[typing.Any]
+    data: typing.Optional[typing.Any] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

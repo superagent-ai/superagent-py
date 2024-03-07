@@ -14,7 +14,7 @@ except ImportError:
 
 class ToolList(pydantic.BaseModel):
     success: bool
-    data: typing.Optional[typing.List[PrismaModelsTool]]
+    data: typing.Optional[typing.List[PrismaModelsTool]] = None
     total_pages: int
 
     def json(self, **kwargs: typing.Any) -> str:

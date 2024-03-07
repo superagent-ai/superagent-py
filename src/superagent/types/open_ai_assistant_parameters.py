@@ -13,9 +13,9 @@ except ImportError:
 
 
 class OpenAiAssistantParameters(pydantic.BaseModel):
-    metadata: typing.Optional[typing.Dict[str, typing.Any]]
-    file_ids: typing.Optional[typing.List[str]] = pydantic.Field(alias="fileIds")
-    tools: typing.Optional[typing.List[OpenAiAssistantParametersToolsItem]]
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    file_ids: typing.Optional[typing.List[str]] = pydantic.Field(alias="fileIds", default=None)
+    tools: typing.Optional[typing.List[OpenAiAssistantParametersToolsItem]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -20,13 +20,15 @@ class PrismaModelsWorkflow(pydantic.BaseModel):
 
     id: str
     name: str
-    description: typing.Optional[str]
+    description: typing.Optional[str] = None
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
-    steps: typing.Optional[typing.List[PrismaModelsWorkflowStep]]
+    steps: typing.Optional[typing.List[PrismaModelsWorkflowStep]] = None
     api_user_id: str = pydantic.Field(alias="apiUserId")
-    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser")
-    workflow_configs: typing.Optional[typing.List[WorkflowConfig]] = pydantic.Field(alias="workflowConfigs")
+    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser", default=None)
+    workflow_configs: typing.Optional[typing.List[WorkflowConfig]] = pydantic.Field(
+        alias="workflowConfigs", default=None
+    )
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -13,7 +13,7 @@ except ImportError:
 
 
 class ToolAssistantToolsFunction(pydantic.BaseModel):
-    function: typing.Optional[FunctionDefinition]
+    function: typing.Optional[FunctionDefinition] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -12,9 +12,9 @@ except ImportError:
 
 
 class FunctionDefinition(pydantic.BaseModel):
-    name: typing.Optional[str]
-    description: typing.Optional[str]
-    parameters: typing.Optional[typing.Dict[str, typing.Any]]
+    name: typing.Optional[str] = None
+    description: typing.Optional[str] = None
+    parameters: typing.Optional[typing.Dict[str, typing.Any]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

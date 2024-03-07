@@ -23,21 +23,23 @@ class PrismaModelsAgent(pydantic.BaseModel):
     id: str
     type: AgentType
     name: str
-    avatar: typing.Optional[str]
-    initial_message: typing.Optional[str] = pydantic.Field(alias="initialMessage")
+    avatar: typing.Optional[str] = None
+    initial_message: typing.Optional[str] = pydantic.Field(alias="initialMessage", default=None)
     description: str
     is_active: bool = pydantic.Field(alias="isActive")
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
-    llms: typing.Optional[typing.List[PrismaModelsAgentLlm]]
-    llm_model: typing.Optional[LlmModel] = pydantic.Field(alias="llmModel")
-    prompt: typing.Optional[str]
+    llms: typing.Optional[typing.List[PrismaModelsAgentLlm]] = None
+    llm_model: typing.Optional[LlmModel] = pydantic.Field(alias="llmModel", default=None)
+    prompt: typing.Optional[str] = None
     api_user_id: str = pydantic.Field(alias="apiUserId")
-    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser")
-    datasources: typing.Optional[typing.List[PrismaModelsAgentDatasource]]
-    tools: typing.Optional[typing.List[PrismaModelsAgentTool]]
-    workflow_steps: typing.Optional[typing.List[PrismaModelsWorkflowStep]] = pydantic.Field(alias="workflowSteps")
-    metadata: typing.Optional[typing.Any]
+    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser", default=None)
+    datasources: typing.Optional[typing.List[PrismaModelsAgentDatasource]] = None
+    tools: typing.Optional[typing.List[PrismaModelsAgentTool]] = None
+    workflow_steps: typing.Optional[typing.List[PrismaModelsWorkflowStep]] = pydantic.Field(
+        alias="workflowSteps", default=None
+    )
+    metadata: typing.Optional[typing.Any] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

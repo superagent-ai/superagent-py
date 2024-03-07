@@ -4,15 +4,13 @@ from __future__ import annotations
 
 import typing
 
-import typing_extensions
-
 from .tool_assistant_tools_code import ToolAssistantToolsCode
 from .tool_assistant_tools_function import ToolAssistantToolsFunction
 from .tool_assistant_tools_retrieval import ToolAssistantToolsRetrieval
 
 
 class OpenAiAssistantParametersToolsItem_CodeInterpreter(ToolAssistantToolsCode):
-    type: typing_extensions.Literal["code_interpreter"]
+    type: typing.Literal["code_interpreter"]
 
     class Config:
         frozen = True
@@ -21,7 +19,7 @@ class OpenAiAssistantParametersToolsItem_CodeInterpreter(ToolAssistantToolsCode)
 
 
 class OpenAiAssistantParametersToolsItem_Retrieval(ToolAssistantToolsRetrieval):
-    type: typing_extensions.Literal["retrieval"]
+    type: typing.Literal["retrieval"]
 
     class Config:
         frozen = True
@@ -30,7 +28,7 @@ class OpenAiAssistantParametersToolsItem_Retrieval(ToolAssistantToolsRetrieval):
 
 
 class OpenAiAssistantParametersToolsItem_Function(ToolAssistantToolsFunction):
-    type: typing_extensions.Literal["function"]
+    type: typing.Literal["function"]
 
     class Config:
         frozen = True

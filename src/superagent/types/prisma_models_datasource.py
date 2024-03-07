@@ -22,19 +22,19 @@ class PrismaModelsDatasource(pydantic.BaseModel):
 
     id: str
     name: str
-    content: typing.Optional[str]
-    description: typing.Optional[str]
-    url: typing.Optional[str]
+    content: typing.Optional[str] = None
+    description: typing.Optional[str] = None
+    url: typing.Optional[str] = None
     type: DatasourceType
     api_user_id: str = pydantic.Field(alias="apiUserId")
-    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser")
+    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser", default=None)
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
-    metadata: typing.Optional[str]
+    metadata: typing.Optional[str] = None
     status: DatasourceStatus
-    datasources: typing.Optional[typing.List[PrismaModelsAgentDatasource]]
-    vector_db: typing.Optional[PrismaModelsVectorDb] = pydantic.Field(alias="vectorDb")
-    vector_db_id: typing.Optional[str] = pydantic.Field(alias="vectorDbId")
+    datasources: typing.Optional[typing.List[PrismaModelsAgentDatasource]] = None
+    vector_db: typing.Optional[PrismaModelsVectorDb] = pydantic.Field(alias="vectorDb", default=None)
+    vector_db_id: typing.Optional[str] = pydantic.Field(alias="vectorDbId", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

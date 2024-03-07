@@ -19,13 +19,13 @@ class WorkflowConfig(pydantic.BaseModel):
     """
 
     id: str
-    config: typing.Optional[typing.Any]
+    config: typing.Optional[typing.Any] = None
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
     workflow_id: str = pydantic.Field(alias="workflowId")
-    workflow: typing.Optional[PrismaModelsWorkflow]
-    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="ApiUser")
-    api_user_id: typing.Optional[str] = pydantic.Field(alias="apiUserId")
+    workflow: typing.Optional[PrismaModelsWorkflow] = None
+    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="ApiUser", default=None)
+    api_user_id: typing.Optional[str] = pydantic.Field(alias="apiUserId", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

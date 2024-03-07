@@ -13,10 +13,10 @@ except ImportError:
 
 class AppModelsRequestApiUser(pydantic.BaseModel):
     email: str
-    first_name: typing.Optional[str] = pydantic.Field(alias="firstName")
-    last_name: typing.Optional[str] = pydantic.Field(alias="lastName")
-    company: typing.Optional[str]
-    anonymous_id: typing.Optional[str] = pydantic.Field(alias="anonymousId")
+    first_name: typing.Optional[str] = pydantic.Field(alias="firstName", default=None)
+    last_name: typing.Optional[str] = pydantic.Field(alias="lastName", default=None)
+    company: typing.Optional[str] = None
+    anonymous_id: typing.Optional[str] = pydantic.Field(alias="anonymousId", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -22,12 +22,12 @@ class PrismaModelsLlm(pydantic.BaseModel):
     id: str
     provider: LlmProvider
     api_key: str = pydantic.Field(alias="apiKey")
-    options: typing.Optional[typing.Any]
-    agents: typing.Optional[typing.List[PrismaModelsAgentLlm]]
+    options: typing.Optional[typing.Any] = None
+    agents: typing.Optional[typing.List[PrismaModelsAgentLlm]] = None
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
     api_user_id: str = pydantic.Field(alias="apiUserId")
-    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser")
+    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

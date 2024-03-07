@@ -12,8 +12,8 @@ except ImportError:
 
 
 class LlmParams(pydantic.BaseModel):
-    max_tokens: typing.Optional[int]
-    temperature: typing.Optional[float]
+    max_tokens: typing.Optional[int] = None
+    temperature: typing.Optional[float] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

@@ -14,7 +14,7 @@ except ImportError:
 
 class AppModelsResponseApiUser(pydantic.BaseModel):
     success: bool
-    data: typing.Optional[PrismaModelsApiUser]
+    data: typing.Optional[PrismaModelsApiUser] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

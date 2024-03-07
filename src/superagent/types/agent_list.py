@@ -14,7 +14,7 @@ except ImportError:
 
 class AgentList(pydantic.BaseModel):
     success: bool
-    data: typing.Optional[typing.List[PrismaModelsAgent]]
+    data: typing.Optional[typing.List[PrismaModelsAgent]] = None
     total_pages: int
 
     def json(self, **kwargs: typing.Any) -> str:

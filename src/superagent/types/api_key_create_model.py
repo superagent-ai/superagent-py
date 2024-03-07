@@ -23,7 +23,7 @@ class ApiKeyCreateModel(pydantic.BaseModel):
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
     api_user_id: str = pydantic.Field(alias="apiUserId")
-    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser")
+    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser", default=None)
     api_key: str = pydantic.Field(alias="apiKey")
 
     def json(self, **kwargs: typing.Any) -> str:

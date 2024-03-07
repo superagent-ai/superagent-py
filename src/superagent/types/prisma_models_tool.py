@@ -24,13 +24,13 @@ class PrismaModelsTool(pydantic.BaseModel):
     description: str
     type: ToolType
     return_direct: bool = pydantic.Field(alias="returnDirect")
-    metadata: typing.Optional[str]
+    metadata: typing.Optional[str] = None
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
     api_user_id: str = pydantic.Field(alias="apiUserId")
-    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser")
-    tools: typing.Optional[typing.List[PrismaModelsAgentTool]]
-    tool_config: typing.Optional[typing.Any] = pydantic.Field(alias="toolConfig")
+    api_user: typing.Optional[PrismaModelsApiUser] = pydantic.Field(alias="apiUser", default=None)
+    tools: typing.Optional[typing.List[PrismaModelsAgentTool]] = None
+    tool_config: typing.Optional[typing.Any] = pydantic.Field(alias="toolConfig", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

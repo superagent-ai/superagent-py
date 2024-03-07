@@ -19,18 +19,20 @@ class PrismaModelsApiUser(pydantic.BaseModel):
     """
 
     id: str
-    token: typing.Optional[str]
-    email: typing.Optional[str]
+    token: typing.Optional[str] = None
+    email: typing.Optional[str] = None
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
-    agents: typing.Optional[typing.List[PrismaModelsAgent]]
-    llms: typing.Optional[typing.List[PrismaModelsLlm]]
-    datasources: typing.Optional[typing.List[PrismaModelsDatasource]]
-    tools: typing.Optional[typing.List[PrismaModelsTool]]
-    workflows: typing.Optional[typing.List[PrismaModelsWorkflow]]
-    vector_db: typing.Optional[typing.List[PrismaModelsVectorDb]] = pydantic.Field(alias="vectorDb")
-    workflow_configs: typing.Optional[typing.List[WorkflowConfig]] = pydantic.Field(alias="workflowConfigs")
-    api_keys: typing.Optional[typing.List[PrismaModelsApiKey]] = pydantic.Field(alias="apiKeys")
+    agents: typing.Optional[typing.List[PrismaModelsAgent]] = None
+    llms: typing.Optional[typing.List[PrismaModelsLlm]] = None
+    datasources: typing.Optional[typing.List[PrismaModelsDatasource]] = None
+    tools: typing.Optional[typing.List[PrismaModelsTool]] = None
+    workflows: typing.Optional[typing.List[PrismaModelsWorkflow]] = None
+    vector_db: typing.Optional[typing.List[PrismaModelsVectorDb]] = pydantic.Field(alias="vectorDb", default=None)
+    workflow_configs: typing.Optional[typing.List[WorkflowConfig]] = pydantic.Field(
+        alias="workflowConfigs", default=None
+    )
+    api_keys: typing.Optional[typing.List[PrismaModelsApiKey]] = pydantic.Field(alias="apiKeys", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

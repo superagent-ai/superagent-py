@@ -14,7 +14,7 @@ except ImportError:
 
 class AgentToolList(pydantic.BaseModel):
     success: bool
-    data: typing.Optional[typing.List[PrismaModelsAgentTool]]
+    data: typing.Optional[typing.List[PrismaModelsAgentTool]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

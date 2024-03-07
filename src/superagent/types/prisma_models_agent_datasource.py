@@ -20,8 +20,8 @@ class PrismaModelsAgentDatasource(pydantic.BaseModel):
 
     agent_id: str = pydantic.Field(alias="agentId")
     datasource_id: str = pydantic.Field(alias="datasourceId")
-    agent: typing.Optional[PrismaModelsAgent]
-    datasource: typing.Optional[PrismaModelsDatasource]
+    agent: typing.Optional[PrismaModelsAgent] = None
+    datasource: typing.Optional[PrismaModelsDatasource] = None
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
 

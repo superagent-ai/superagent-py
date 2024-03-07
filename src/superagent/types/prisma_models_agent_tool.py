@@ -20,8 +20,8 @@ class PrismaModelsAgentTool(pydantic.BaseModel):
 
     agent_id: str = pydantic.Field(alias="agentId")
     tool_id: str = pydantic.Field(alias="toolId")
-    agent: typing.Optional[PrismaModelsAgent]
-    tool: typing.Optional[PrismaModelsTool]
+    agent: typing.Optional[PrismaModelsAgent] = None
+    tool: typing.Optional[PrismaModelsTool] = None
     created_at: dt.datetime = pydantic.Field(alias="createdAt")
     updated_at: dt.datetime = pydantic.Field(alias="updatedAt")
 

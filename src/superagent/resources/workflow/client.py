@@ -8,6 +8,7 @@ from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_dict import remove_none_from_dict
+from ...core.request_options import RequestOptions
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.app_models_request_workflow import AppModelsRequestWorkflow
 from ...types.app_models_request_workflow_step import AppModelsRequestWorkflowStep
@@ -30,7 +31,13 @@ class WorkflowClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list(self, *, skip: typing.Optional[int] = None, take: typing.Optional[int] = None) -> WorkflowList:
+    def list(
+        self,
+        *,
+        skip: typing.Optional[int] = None,
+        take: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> WorkflowList:
         """
         List all workflows
 
@@ -38,13 +45,38 @@ class WorkflowClient:
             - skip: typing.Optional[int].
 
             - take: typing.Optional[int].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/workflows"),
-            params=remove_none_from_dict({"skip": skip, "take": take}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "skip": skip,
+                        "take": take,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(WorkflowList, _response.json())  # type: ignore
@@ -56,19 +88,42 @@ class WorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def create(self, *, request: AppModelsRequestWorkflow) -> AppModelsResponseWorkflow:
+    def create(
+        self, *, request: AppModelsRequestWorkflow, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseWorkflow:
         """
         Create a new workflow
 
         Parameters:
             - request: AppModelsRequestWorkflow.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/workflows"),
-            json=jsonable_encoder(request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseWorkflow, _response.json())  # type: ignore
@@ -80,18 +135,38 @@ class WorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, workflow_id: str) -> AppModelsResponseWorkflow:
+    def get(
+        self, workflow_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseWorkflow:
         """
         Get a single workflow
 
         Parameters:
             - workflow_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseWorkflow, _response.json())  # type: ignore
@@ -103,18 +178,36 @@ class WorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, workflow_id: str) -> typing.Any:
+    def delete(self, workflow_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> typing.Any:
         """
         Delete a specific workflow
 
         Parameters:
             - workflow_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -127,7 +220,12 @@ class WorkflowClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def update(
-        self, workflow_id: str, step_id: str, *, request: AppModelsRequestWorkflowStep
+        self,
+        workflow_id: str,
+        step_id: str,
+        *,
+        request: AppModelsRequestWorkflowStep,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseWorkflowStep:
         """
         Patch a workflow step
@@ -138,15 +236,37 @@ class WorkflowClient:
             - step_id: str.
 
             - request: AppModelsRequestWorkflowStep.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/steps/{step_id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/workflows/{jsonable_encoder(workflow_id)}/steps/{jsonable_encoder(step_id)}",
             ),
-            json=jsonable_encoder(request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseWorkflowStep, _response.json())  # type: ignore
@@ -159,7 +279,13 @@ class WorkflowClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def invoke(
-        self, workflow_id: str, *, input: str, enable_streaming: bool, session_id: typing.Optional[str] = OMIT
+        self,
+        workflow_id: str,
+        *,
+        input: str,
+        enable_streaming: bool,
+        session_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Any:
         """
         Invoke a specific workflow
@@ -172,16 +298,39 @@ class WorkflowClient:
             - enable_streaming: bool.
 
             - session_id: typing.Optional[str].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
         if session_id is not OMIT:
             _request["sessionId"] = session_id
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/invoke"),
-            json=jsonable_encoder(_request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}/invoke"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -193,18 +342,38 @@ class WorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def list_steps(self, workflow_id: str) -> WorkflowStepList:
+    def list_steps(
+        self, workflow_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> WorkflowStepList:
         """
         List all steps of a workflow
 
         Parameters:
             - workflow_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/steps"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}/steps"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(WorkflowStepList, _response.json())  # type: ignore
@@ -216,7 +385,13 @@ class WorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def add_step(self, workflow_id: str, *, request: AppModelsRequestWorkflowStep) -> AppModelsResponseWorkflowStep:
+    def add_step(
+        self,
+        workflow_id: str,
+        *,
+        request: AppModelsRequestWorkflowStep,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AppModelsResponseWorkflowStep:
         """
         Create a new workflow step
 
@@ -224,13 +399,36 @@ class WorkflowClient:
             - workflow_id: str.
 
             - request: AppModelsRequestWorkflowStep.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/steps"),
-            json=jsonable_encoder(request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}/steps"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseWorkflowStep, _response.json())  # type: ignore
@@ -242,7 +440,9 @@ class WorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete_step(self, workflow_id: str, step_id: str) -> typing.Any:
+    def delete_step(
+        self, workflow_id: str, step_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Any:
         """
         Delete a specific workflow step
 
@@ -250,14 +450,31 @@ class WorkflowClient:
             - workflow_id: str.
 
             - step_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/steps/{step_id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/workflows/{jsonable_encoder(workflow_id)}/steps/{jsonable_encoder(step_id)}",
             ),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -274,7 +491,13 @@ class AsyncWorkflowClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list(self, *, skip: typing.Optional[int] = None, take: typing.Optional[int] = None) -> WorkflowList:
+    async def list(
+        self,
+        *,
+        skip: typing.Optional[int] = None,
+        take: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> WorkflowList:
         """
         List all workflows
 
@@ -282,13 +505,38 @@ class AsyncWorkflowClient:
             - skip: typing.Optional[int].
 
             - take: typing.Optional[int].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/workflows"),
-            params=remove_none_from_dict({"skip": skip, "take": take}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "skip": skip,
+                        "take": take,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(WorkflowList, _response.json())  # type: ignore
@@ -300,19 +548,42 @@ class AsyncWorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def create(self, *, request: AppModelsRequestWorkflow) -> AppModelsResponseWorkflow:
+    async def create(
+        self, *, request: AppModelsRequestWorkflow, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseWorkflow:
         """
         Create a new workflow
 
         Parameters:
             - request: AppModelsRequestWorkflow.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/workflows"),
-            json=jsonable_encoder(request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseWorkflow, _response.json())  # type: ignore
@@ -324,18 +595,38 @@ class AsyncWorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, workflow_id: str) -> AppModelsResponseWorkflow:
+    async def get(
+        self, workflow_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseWorkflow:
         """
         Get a single workflow
 
         Parameters:
             - workflow_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseWorkflow, _response.json())  # type: ignore
@@ -347,18 +638,36 @@ class AsyncWorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, workflow_id: str) -> typing.Any:
+    async def delete(self, workflow_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> typing.Any:
         """
         Delete a specific workflow
 
         Parameters:
             - workflow_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -371,7 +680,12 @@ class AsyncWorkflowClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def update(
-        self, workflow_id: str, step_id: str, *, request: AppModelsRequestWorkflowStep
+        self,
+        workflow_id: str,
+        step_id: str,
+        *,
+        request: AppModelsRequestWorkflowStep,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseWorkflowStep:
         """
         Patch a workflow step
@@ -382,15 +696,37 @@ class AsyncWorkflowClient:
             - step_id: str.
 
             - request: AppModelsRequestWorkflowStep.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/steps/{step_id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/workflows/{jsonable_encoder(workflow_id)}/steps/{jsonable_encoder(step_id)}",
             ),
-            json=jsonable_encoder(request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseWorkflowStep, _response.json())  # type: ignore
@@ -403,7 +739,13 @@ class AsyncWorkflowClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def invoke(
-        self, workflow_id: str, *, input: str, enable_streaming: bool, session_id: typing.Optional[str] = OMIT
+        self,
+        workflow_id: str,
+        *,
+        input: str,
+        enable_streaming: bool,
+        session_id: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.Any:
         """
         Invoke a specific workflow
@@ -416,16 +758,39 @@ class AsyncWorkflowClient:
             - enable_streaming: bool.
 
             - session_id: typing.Optional[str].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
         if session_id is not OMIT:
             _request["sessionId"] = session_id
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/invoke"),
-            json=jsonable_encoder(_request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}/invoke"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -437,18 +802,38 @@ class AsyncWorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def list_steps(self, workflow_id: str) -> WorkflowStepList:
+    async def list_steps(
+        self, workflow_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> WorkflowStepList:
         """
         List all steps of a workflow
 
         Parameters:
             - workflow_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/steps"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}/steps"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(WorkflowStepList, _response.json())  # type: ignore
@@ -461,7 +846,11 @@ class AsyncWorkflowClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def add_step(
-        self, workflow_id: str, *, request: AppModelsRequestWorkflowStep
+        self,
+        workflow_id: str,
+        *,
+        request: AppModelsRequestWorkflowStep,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseWorkflowStep:
         """
         Create a new workflow step
@@ -470,13 +859,36 @@ class AsyncWorkflowClient:
             - workflow_id: str.
 
             - request: AppModelsRequestWorkflowStep.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/steps"),
-            json=jsonable_encoder(request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{jsonable_encoder(workflow_id)}/steps"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseWorkflowStep, _response.json())  # type: ignore
@@ -488,7 +900,9 @@ class AsyncWorkflowClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete_step(self, workflow_id: str, step_id: str) -> typing.Any:
+    async def delete_step(
+        self, workflow_id: str, step_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Any:
         """
         Delete a specific workflow step
 
@@ -496,14 +910,31 @@ class AsyncWorkflowClient:
             - workflow_id: str.
 
             - step_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"api/v1/workflows/{workflow_id}/steps/{step_id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/workflows/{jsonable_encoder(workflow_id)}/steps/{jsonable_encoder(step_id)}",
             ),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore

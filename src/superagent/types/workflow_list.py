@@ -14,7 +14,7 @@ except ImportError:
 
 class WorkflowList(pydantic.BaseModel):
     success: bool
-    data: typing.Optional[typing.List[PrismaModelsWorkflow]]
+    data: typing.Optional[typing.List[PrismaModelsWorkflow]] = None
     total_pages: int
 
     def json(self, **kwargs: typing.Any) -> str:

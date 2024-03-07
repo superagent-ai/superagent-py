@@ -14,7 +14,7 @@ except ImportError:
 class AppModelsRequestLlm(pydantic.BaseModel):
     provider: str
     api_key: str = pydantic.Field(alias="apiKey")
-    options: typing.Optional[typing.Dict[str, typing.Any]]
+    options: typing.Optional[typing.Dict[str, typing.Any]] = None
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

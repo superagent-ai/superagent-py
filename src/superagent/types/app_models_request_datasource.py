@@ -13,12 +13,12 @@ except ImportError:
 
 class AppModelsRequestDatasource(pydantic.BaseModel):
     name: str
-    description: typing.Optional[str]
+    description: typing.Optional[str] = None
     type: str
-    content: typing.Optional[str]
-    url: typing.Optional[str]
-    metadata: typing.Optional[typing.Dict[str, typing.Any]]
-    vector_db_id: typing.Optional[str] = pydantic.Field(alias="vectorDbId")
+    content: typing.Optional[str] = None
+    url: typing.Optional[str] = None
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
+    vector_db_id: typing.Optional[str] = pydantic.Field(alias="vectorDbId", default=None)
 
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}

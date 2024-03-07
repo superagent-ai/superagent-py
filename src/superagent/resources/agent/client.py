@@ -8,6 +8,7 @@ from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_dict import remove_none_from_dict
+from ...core.request_options import RequestOptions
 from ...errors.unprocessable_entity_error import UnprocessableEntityError
 from ...types.agent_datasosurce_list import AgentDatasosurceList
 from ...types.agent_list import AgentList
@@ -33,7 +34,13 @@ class AgentClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def list(self, *, skip: typing.Optional[int] = None, take: typing.Optional[int] = None) -> AgentList:
+    def list(
+        self,
+        *,
+        skip: typing.Optional[int] = None,
+        take: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AgentList:
         """
         List all agents
 
@@ -41,13 +48,38 @@ class AgentClient:
             - skip: typing.Optional[int].
 
             - take: typing.Optional[int].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
-            params=remove_none_from_dict({"skip": skip, "take": take}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "skip": skip,
+                        "take": take,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AgentList, _response.json())  # type: ignore
@@ -73,6 +105,7 @@ class AgentClient:
         type: typing.Optional[AgentType] = OMIT,
         parameters: typing.Optional[OpenAiAssistantParameters] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseAgent:
         """
         Create a new agent
@@ -99,6 +132,8 @@ class AgentClient:
             - parameters: typing.Optional[OpenAiAssistantParameters].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _request: typing.Dict[str, typing.Any] = {"name": name}
         if is_active is not OMIT:
@@ -110,13 +145,13 @@ class AgentClient:
         if llm_model is not OMIT:
             _request["llmModel"] = llm_model
         if llm_provider is not OMIT:
-            _request["llmProvider"] = llm_provider.value
+            _request["llmProvider"] = llm_provider
         if description is not OMIT:
             _request["description"] = description
         if avatar is not OMIT:
             _request["avatar"] = avatar
         if type is not OMIT:
-            _request["type"] = type.value
+            _request["type"] = type
         if parameters is not OMIT:
             _request["parameters"] = parameters
         if metadata is not OMIT:
@@ -124,9 +159,28 @@ class AgentClient:
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
-            json=jsonable_encoder(_request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -138,18 +192,36 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def get(self, agent_id: str) -> AppModelsResponseAgent:
+    def get(self, agent_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> AppModelsResponseAgent:
         """
         Get a single agent
 
         Parameters:
             - agent_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -161,18 +233,36 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def delete(self, agent_id: str) -> typing.Any:
+    def delete(self, agent_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> typing.Any:
         """
         Delete an agent
 
         Parameters:
             - agent_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -197,6 +287,7 @@ class AgentClient:
         avatar: typing.Optional[str] = OMIT,
         type: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseAgent:
         """
         Patch an agent
@@ -221,6 +312,8 @@ class AgentClient:
             - type: typing.Optional[str].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _request: typing.Dict[str, typing.Any] = {}
         if is_active is not OMIT:
@@ -243,10 +336,31 @@ class AgentClient:
             _request["metadata"] = metadata
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
-            json=jsonable_encoder(_request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -267,6 +381,7 @@ class AgentClient:
         enable_streaming: bool,
         output_schema: typing.Optional[str] = OMIT,
         llm_params: typing.Optional[LlmParams] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseAgentInvoke:
         """
         Invoke an agent
@@ -283,6 +398,8 @@ class AgentClient:
             - output_schema: typing.Optional[str].
 
             - llm_params: typing.Optional[LlmParams].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
         if session_id is not OMIT:
@@ -293,10 +410,31 @@ class AgentClient:
             _request["llm_params"] = llm_params
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/invoke"),
-            json=jsonable_encoder(_request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/invoke"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgentInvoke, _response.json())  # type: ignore
@@ -308,7 +446,9 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def add_llm(self, agent_id: str, *, llm_id: str) -> AppModelsResponseAgent:
+    def add_llm(
+        self, agent_id: str, *, llm_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseAgent:
         """
         Add LLM to agent
 
@@ -316,13 +456,36 @@ class AgentClient:
             - agent_id: str.
 
             - llm_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/llms"),
-            json=jsonable_encoder({"llmId": llm_id}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/llms"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder({"llmId": llm_id})
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder({"llmId": llm_id}),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -334,7 +497,9 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def remove_llm(self, agent_id: str, llm_id: str) -> typing.Any:
+    def remove_llm(
+        self, agent_id: str, llm_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Any:
         """
         Remove LLM from agent
 
@@ -342,12 +507,31 @@ class AgentClient:
             - agent_id: str.
 
             - llm_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/llms/{llm_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/agents/{jsonable_encoder(agent_id)}/llms/{jsonable_encoder(llm_id)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -359,18 +543,36 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def list_tools(self, agent_id: str) -> AgentToolList:
+    def list_tools(self, agent_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> AgentToolList:
         """
         List agent tools
 
         Parameters:
             - agent_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/tools"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AgentToolList, _response.json())  # type: ignore
@@ -382,7 +584,9 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def add_tool(self, agent_id: str, *, tool_id: str) -> AppModelsResponseAgent:
+    def add_tool(
+        self, agent_id: str, *, tool_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseAgent:
         """
         Add tool to agent
 
@@ -390,13 +594,36 @@ class AgentClient:
             - agent_id: str.
 
             - tool_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools"),
-            json=jsonable_encoder({"toolId": tool_id}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/tools"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder({"toolId": tool_id})
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder({"toolId": tool_id}),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -408,7 +635,9 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def remove_tool(self, agent_id: str, tool_id: str) -> typing.Any:
+    def remove_tool(
+        self, agent_id: str, tool_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Any:
         """
         Remove tool from agent
 
@@ -416,14 +645,31 @@ class AgentClient:
             - agent_id: str.
 
             - tool_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools/{tool_id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/agents/{jsonable_encoder(agent_id)}/tools/{jsonable_encoder(tool_id)}",
             ),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -435,18 +681,38 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def list_datasources(self, agent_id: str) -> AgentDatasosurceList:
+    def list_datasources(
+        self, agent_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AgentDatasosurceList:
         """
         List agent datasources
 
         Parameters:
             - agent_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/datasources"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AgentDatasosurceList, _response.json())  # type: ignore
@@ -458,7 +724,9 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def add_datasource(self, agent_id: str, *, datasource_id: str) -> AppModelsResponseAgent:
+    def add_datasource(
+        self, agent_id: str, *, datasource_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseAgent:
         """
         Add datasource to agent
 
@@ -466,13 +734,36 @@ class AgentClient:
             - agent_id: str.
 
             - datasource_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources"),
-            json=jsonable_encoder({"datasourceId": datasource_id}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/datasources"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder({"datasourceId": datasource_id})
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder({"datasourceId": datasource_id}),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -484,7 +775,9 @@ class AgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def remove_datasource(self, agent_id: str, datasource_id: str) -> typing.Any:
+    def remove_datasource(
+        self, agent_id: str, datasource_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Any:
         """
         Remove datasource from agent
 
@@ -492,14 +785,31 @@ class AgentClient:
             - agent_id: str.
 
             - datasource_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = self._client_wrapper.httpx_client.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources/{datasource_id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/agents/{jsonable_encoder(agent_id)}/datasources/{jsonable_encoder(datasource_id)}",
             ),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -516,7 +826,13 @@ class AsyncAgentClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def list(self, *, skip: typing.Optional[int] = None, take: typing.Optional[int] = None) -> AgentList:
+    async def list(
+        self,
+        *,
+        skip: typing.Optional[int] = None,
+        take: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AgentList:
         """
         List all agents
 
@@ -524,13 +840,38 @@ class AsyncAgentClient:
             - skip: typing.Optional[int].
 
             - take: typing.Optional[int].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
-            params=remove_none_from_dict({"skip": skip, "take": take}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        "skip": skip,
+                        "take": take,
+                        **(
+                            request_options.get("additional_query_parameters", {})
+                            if request_options is not None
+                            else {}
+                        ),
+                    }
+                )
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AgentList, _response.json())  # type: ignore
@@ -556,6 +897,7 @@ class AsyncAgentClient:
         type: typing.Optional[AgentType] = OMIT,
         parameters: typing.Optional[OpenAiAssistantParameters] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseAgent:
         """
         Create a new agent
@@ -582,6 +924,8 @@ class AsyncAgentClient:
             - parameters: typing.Optional[OpenAiAssistantParameters].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _request: typing.Dict[str, typing.Any] = {"name": name}
         if is_active is not OMIT:
@@ -593,13 +937,13 @@ class AsyncAgentClient:
         if llm_model is not OMIT:
             _request["llmModel"] = llm_model
         if llm_provider is not OMIT:
-            _request["llmProvider"] = llm_provider.value
+            _request["llmProvider"] = llm_provider
         if description is not OMIT:
             _request["description"] = description
         if avatar is not OMIT:
             _request["avatar"] = avatar
         if type is not OMIT:
-            _request["type"] = type.value
+            _request["type"] = type
         if parameters is not OMIT:
             _request["parameters"] = parameters
         if metadata is not OMIT:
@@ -607,9 +951,28 @@ class AsyncAgentClient:
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "api/v1/agents"),
-            json=jsonable_encoder(_request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -621,18 +984,38 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def get(self, agent_id: str) -> AppModelsResponseAgent:
+    async def get(
+        self, agent_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseAgent:
         """
         Get a single agent
 
         Parameters:
             - agent_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -644,18 +1027,36 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def delete(self, agent_id: str) -> typing.Any:
+    async def delete(self, agent_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> typing.Any:
         """
         Delete an agent
 
         Parameters:
             - agent_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -680,6 +1081,7 @@ class AsyncAgentClient:
         avatar: typing.Optional[str] = OMIT,
         type: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseAgent:
         """
         Patch an agent
@@ -704,6 +1106,8 @@ class AsyncAgentClient:
             - type: typing.Optional[str].
 
             - metadata: typing.Optional[typing.Dict[str, typing.Any]].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _request: typing.Dict[str, typing.Any] = {}
         if is_active is not OMIT:
@@ -726,10 +1130,31 @@ class AsyncAgentClient:
             _request["metadata"] = metadata
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}"),
-            json=jsonable_encoder(_request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -750,6 +1175,7 @@ class AsyncAgentClient:
         enable_streaming: bool,
         output_schema: typing.Optional[str] = OMIT,
         llm_params: typing.Optional[LlmParams] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AppModelsResponseAgentInvoke:
         """
         Invoke an agent
@@ -766,6 +1192,8 @@ class AsyncAgentClient:
             - output_schema: typing.Optional[str].
 
             - llm_params: typing.Optional[LlmParams].
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _request: typing.Dict[str, typing.Any] = {"input": input, "enableStreaming": enable_streaming}
         if session_id is not OMIT:
@@ -776,10 +1204,31 @@ class AsyncAgentClient:
             _request["llm_params"] = llm_params
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/invoke"),
-            json=jsonable_encoder(_request),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/invoke"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder(_request)
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder(_request),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgentInvoke, _response.json())  # type: ignore
@@ -791,7 +1240,9 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def add_llm(self, agent_id: str, *, llm_id: str) -> AppModelsResponseAgent:
+    async def add_llm(
+        self, agent_id: str, *, llm_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseAgent:
         """
         Add LLM to agent
 
@@ -799,13 +1250,36 @@ class AsyncAgentClient:
             - agent_id: str.
 
             - llm_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/llms"),
-            json=jsonable_encoder({"llmId": llm_id}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/llms"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder({"llmId": llm_id})
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder({"llmId": llm_id}),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -817,7 +1291,9 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def remove_llm(self, agent_id: str, llm_id: str) -> typing.Any:
+    async def remove_llm(
+        self, agent_id: str, llm_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Any:
         """
         Remove LLM from agent
 
@@ -825,12 +1301,31 @@ class AsyncAgentClient:
             - agent_id: str.
 
             - llm_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/llms/{llm_id}"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/agents/{jsonable_encoder(agent_id)}/llms/{jsonable_encoder(llm_id)}",
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -842,18 +1337,38 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def list_tools(self, agent_id: str) -> AgentToolList:
+    async def list_tools(
+        self, agent_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AgentToolList:
         """
         List agent tools
 
         Parameters:
             - agent_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/tools"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AgentToolList, _response.json())  # type: ignore
@@ -865,7 +1380,9 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def add_tool(self, agent_id: str, *, tool_id: str) -> AppModelsResponseAgent:
+    async def add_tool(
+        self, agent_id: str, *, tool_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseAgent:
         """
         Add tool to agent
 
@@ -873,13 +1390,36 @@ class AsyncAgentClient:
             - agent_id: str.
 
             - tool_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools"),
-            json=jsonable_encoder({"toolId": tool_id}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/tools"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder({"toolId": tool_id})
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder({"toolId": tool_id}),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -891,7 +1431,9 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def remove_tool(self, agent_id: str, tool_id: str) -> typing.Any:
+    async def remove_tool(
+        self, agent_id: str, tool_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Any:
         """
         Remove tool from agent
 
@@ -899,14 +1441,31 @@ class AsyncAgentClient:
             - agent_id: str.
 
             - tool_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/tools/{tool_id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/agents/{jsonable_encoder(agent_id)}/tools/{jsonable_encoder(tool_id)}",
             ),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
@@ -918,18 +1477,38 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def list_datasources(self, agent_id: str) -> AgentDatasosurceList:
+    async def list_datasources(
+        self, agent_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AgentDatasosurceList:
         """
         List agent datasources
 
         Parameters:
             - agent_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources"),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/datasources"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AgentDatasosurceList, _response.json())  # type: ignore
@@ -941,7 +1520,9 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def add_datasource(self, agent_id: str, *, datasource_id: str) -> AppModelsResponseAgent:
+    async def add_datasource(
+        self, agent_id: str, *, datasource_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AppModelsResponseAgent:
         """
         Add datasource to agent
 
@@ -949,13 +1530,36 @@ class AsyncAgentClient:
             - agent_id: str.
 
             - datasource_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources"),
-            json=jsonable_encoder({"datasourceId": datasource_id}),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            urllib.parse.urljoin(
+                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{jsonable_encoder(agent_id)}/datasources"
+            ),
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            json=jsonable_encoder({"datasourceId": datasource_id})
+            if request_options is None or request_options.get("additional_body_parameters") is None
+            else {
+                **jsonable_encoder({"datasourceId": datasource_id}),
+                **(jsonable_encoder(remove_none_from_dict(request_options.get("additional_body_parameters", {})))),
+            },
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(AppModelsResponseAgent, _response.json())  # type: ignore
@@ -967,7 +1571,9 @@ class AsyncAgentClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    async def remove_datasource(self, agent_id: str, datasource_id: str) -> typing.Any:
+    async def remove_datasource(
+        self, agent_id: str, datasource_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Any:
         """
         Remove datasource from agent
 
@@ -975,14 +1581,31 @@ class AsyncAgentClient:
             - agent_id: str.
 
             - datasource_id: str.
+
+            - request_options: typing.Optional[RequestOptions]. Request-specific configuration.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "DELETE",
             urllib.parse.urljoin(
-                f"{self._client_wrapper.get_base_url()}/", f"api/v1/agents/{agent_id}/datasources/{datasource_id}"
+                f"{self._client_wrapper.get_base_url()}/",
+                f"api/v1/agents/{jsonable_encoder(agent_id)}/datasources/{jsonable_encoder(datasource_id)}",
             ),
-            headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            params=jsonable_encoder(
+                request_options.get("additional_query_parameters") if request_options is not None else None
+            ),
+            headers=jsonable_encoder(
+                remove_none_from_dict(
+                    {
+                        **self._client_wrapper.get_headers(),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
+            ),
+            timeout=request_options.get("timeout_in_seconds")
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
+            else 60,
+            retries=0,
+            max_retries=request_options.get("max_retries") if request_options is not None else 0,  # type: ignore
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.Any, _response.json())  # type: ignore
