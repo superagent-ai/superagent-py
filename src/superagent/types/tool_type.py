@@ -30,6 +30,7 @@ class ToolType(str, enum.Enum):
     FUNCTION = "FUNCTION"
     HTTP = "HTTP"
     SUPERRAG = "SUPERRAG"
+    RESEARCH = "RESEARCH"
 
     def visit(
         self,
@@ -52,6 +53,7 @@ class ToolType(str, enum.Enum):
         function: typing.Callable[[], T_Result],
         http: typing.Callable[[], T_Result],
         superrag: typing.Callable[[], T_Result],
+        research: typing.Callable[[], T_Result],
     ) -> T_Result:
         if self is ToolType.ALGOLIA:
             return algolia()
@@ -91,3 +93,5 @@ class ToolType(str, enum.Enum):
             return http()
         if self is ToolType.SUPERRAG:
             return superrag()
+        if self is ToolType.RESEARCH:
+            return research()
