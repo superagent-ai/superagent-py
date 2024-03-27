@@ -27,6 +27,7 @@ from .app_models_response_workflow_step import AppModelsResponseWorkflowStep
 from .datasource_list import DatasourceList
 from .datasource_status import DatasourceStatus
 from .datasource_type import DatasourceType
+from .embeddings_model_provider import EmbeddingsModelProvider
 from .function_definition import FunctionDefinition
 from .http_validation_error import HttpValidationError
 from .llm_list import LlmList
@@ -93,6 +94,7 @@ __all__ = [
     "DatasourceList",
     "DatasourceStatus",
     "DatasourceType",
+    "EmbeddingsModelProvider",
     "FunctionDefinition",
     "HttpValidationError",
     "LlmList",
